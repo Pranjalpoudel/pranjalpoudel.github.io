@@ -201,7 +201,7 @@ body {
 
 .hero-content {
     max-width: 600px;
-    z-index: 1;
+    z-index: 10;
 }
 
 .greeting {
@@ -458,6 +458,150 @@ body {
     font-size: 0.9rem;
 }
 
+.achievement-card p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+/* Education Timeline */
+.timeline {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Vertical Line */
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    background: var(--card-border);
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -3px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+}
+
+.timeline-item {
+    padding: 10px 40px;
+    position: relative;
+    background-color: inherit;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+/* Left side */
+.timeline-item:nth-child(odd) {
+    left: 0;
+}
+
+/* Right side */
+.timeline-item:nth-child(even) {
+    left: 50%;
+}
+
+/* Dot */
+.timeline-dot {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: -10px;
+    background-color: var(--primary-color);
+    border: 4px solid #111;
+    top: 25px;
+    border-radius: 50%;
+    z-index: 1;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.timeline-item:nth-child(even) .timeline-dot {
+    left: -10px;
+}
+
+/* Content Box */
+.timeline-content {
+    background: var(--card-bg);
+    padding: 20px 30px;
+    border-radius: 15px;
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    position: relative;
+    transition: transform 0.3s;
+}
+
+.timeline-content:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: var(--glow-shadow);
+}
+
+.timeline-date {
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.timeline-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.timeline-content h4 {
+    color: var(--text-color);
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+.scholarship,
+.location {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.gpa-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.gpa-tag {
+    background: rgba(0, 243, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--primary-color);
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+/* Timeline Mobile Responsive */
+@media (max-width: 768px) {
+    .timeline::after {
+        left: 31px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
+    }
+
+    .timeline-item:nth-child(even) {
+        left: 0;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-dot,
+    .timeline-item:nth-child(even) .timeline-dot {
+        left: 21px;
+        right: auto;
+    }
+}
+
 /* Cards Grid (Skills & Hobbies) */
 .cards-grid {
     display: grid;
@@ -649,5 +793,86 @@ footer i {
 
     .hero-buttons {
         justify-content: center;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .section {
+        padding: 5rem 5%;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .contact-container {
+        flex-direction: column;
+    }
+
+    .glass-form,
+    .social-links-vertical {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Navigation */
+    .nav-links {
+        display: none;
+        /* Hide nav links on mobile for simplicity or implement burger */
+    }
+
+    .navbar {
+        justify-content: space-between;
+        padding: 1.5rem 5%;
+    }
+
+    /* Hero */
+    .hero {
+        flex-direction: column-reverse;
+        text-align: center;
+        padding-top: 100px;
+    }
+
+    .hero-content {
+        align-items: center;
+        margin-top: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero .title {
+        font-size: 1.2rem;
+    }
+
+    .profile-img {
+        width: 250px;
+        height: 250px;
+        margin-bottom: 2rem;
+    }
+
+    /* Sections */
+    .section-title {
+        font-size: 2rem;
+    }
+
+    /* Cards */
+    .about-grid,
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .achievement-card {
+        width: 100%;
+    }
+
+    /* Contact */
+    .contact-container {
+        gap: 3rem;
     }
 }

@@ -168,7 +168,12 @@ class Particle {
 // Create particle array
 function init() {
     particlesArray = [];
-    let numberOfParticles = (canvas.height * canvas.width) / 9000;
+    // Reduce particle density for smaller screens to prevent lag
+    let divisor = 9000;
+    if (window.innerWidth < 768) {
+        divisor = 20000; // Much fewer particles on mobile
+    }
+    let numberOfParticles = (canvas.height * canvas.width) / divisor;
     let networkColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
 
     for (let i = 0; i < numberOfParticles; i++) {
