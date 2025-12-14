@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            /* Changed to start for scrolling */
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 2rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            overflow-y: auto;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 2rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            text-align: center;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--glow-shadow);
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+
+        .count {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        /* Message Table */
+        .message-list {
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .msg-body {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin Dashboard</h1>
+
+    <div class="dashboard-container">
+        <!-- Visitor Stats -->
+        <div class="dashboard-card">
+            <h2>Visitor Stats</h2>
+            <div class="count" id="dash-count">0</div>
+            <p>Total Website Visits</p>
+            <canvas id="visitorChart" style="margin-top: 20px;"></canvas>
+        </div>
+
+        <!-- Inbox -->
+        <div class="dashboard-card" style="grid-column: span 2;">
+            <h2>Messages Inbox (<span id="msg-count">0</span>)</h2>
+            <div class="message-list" id="inbox">
+                <p style="color: grey;">No messages yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Visitor Count
+        const count = localStorage.getItem('page_visits') || 0;
+        document.getElementById('dash-count').innerText = count;
+
+        // Render Chart
+        const ctx = document.getElementById('visitorChart').getContext('2d');
+        // Simulated weekly data + current total
+        const weeklyData = [12, 19, 3, 5, 2, 3, parseInt(count)];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+                datasets: [{
+                    label: 'Page Visits',
+                    data: weeklyData,
+                    borderColor: '#00f3ff',
+                    backgroundColor: 'rgba(0, 243, 255, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
+        });
+
+        // Load Messages
+        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+        document.getElementById('msg-count').innerText = messages.length;
+        const inbox = document.getElementById('inbox');
+
+        if (messages.length > 0) {
+            inbox.innerHTML = '';
+            // Show new messages first
+            messages.reverse().forEach(msg => {
+                const item = document.createElement('div');
+                item.className = 'message-item';
+                item.innerHTML = `
+                    <div class="msg-header">
+                        <span><strong>${msg.name}</strong> (${msg.email})</span>
+                        <span>${msg.date}</span>
+                    </div>
+                    <div class="msg-body">${msg.message}</div>
+                `;
+                inbox.appendChild(item);
+            });
+        }
+    </script>
+</body>
+
+</html>

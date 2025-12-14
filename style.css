@@ -40,6 +40,31 @@ body {
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--card-border);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Text Selection */
+::selection {
+    background: var(--primary-color);
+    color: #000;
 }
 
 /* Navigation */
@@ -86,7 +111,16 @@ body {
     bottom: -5px;
     left: 0;
     background-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
     transition: width 0.3s;
+}
+
+.nav-links li a.active::after {
+    width: 100%;
+}
+
+.nav-links li a.active::after {
+    width: 100%;
 }
 
 .nav-links li a:hover {
@@ -123,6 +157,46 @@ body {
     justify-content: space-between;
     padding: 0 10%;
     position: relative;
+    overflow: hidden;
+    /* Ensure background elements don't overflow */
+}
+
+#canvas1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.6;
+    /* Subtle effect */
+    pointer-events: none;
+    /* Let clicks pass through if needed, but we want interaction so moving logic to JS if pointer events required, actually keeping it enabled for mouse interaction */
+    pointer-events: auto;
+}
+
+/* Hero Aurora Background Effect */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 243, 255, 0.1) 0%, rgba(255, 0, 255, 0.05) 50%, transparent 70%);
+    animation: rotateBackground 20s linear infinite;
+    z-index: 0;
+    filter: blur(80px);
+}
+
+@keyframes rotateBackground {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .hero-content {
@@ -141,9 +215,26 @@ body {
     font-size: 4rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    background: linear-gradient(to right, var(--text-color), var(--primary-color));
+    background: linear-gradient(to right, var(--text-color), var(--primary-color), var(--secondary-color));
+    background-size: 200% auto;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: gradientText 5s linear infinite;
+}
+
+@keyframes gradientText {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .title {
@@ -189,6 +280,83 @@ body {
     gap: 1rem;
 }
 
+.hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-img {
+    width: 350px;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    border: 2px solid rgba(0, 243, 255, 0.5);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    animation: morph 8s ease-in-out infinite, float 6s ease-in-out infinite;
+    z-index: 2;
+    backdrop-filter: blur(5px);
+}
+
+.glow-circle {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 0, 255, 0.2), transparent 70%);
+    z-index: 1;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes morph {
+    0% {
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    }
+
+    25% {
+        border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+    }
+
+    50% {
+        border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+    }
+
+    75% {
+        border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+    }
+
+    100% {
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
 .btn {
     padding: 0.8rem 2rem;
     border-radius: 50px;
@@ -221,7 +389,11 @@ body {
 
 /* Sections */
 .section {
-    padding: 5rem 10%;
+    padding: 5rem 5%;
+    /* Reduced side padding (was 10%) to fill more space */
+    max-width: 1400px;
+    /* Prevent it from getting too wide on huge screens */
+    margin: 0 auto;
 }
 
 .section-title {
@@ -263,8 +435,10 @@ body {
     border-radius: 15px;
     text-align: center;
     width: 200px;
-    backdrop-filter: blur(5px);
-    transition: transform 0.3s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .achievement-card:hover {
@@ -301,6 +475,9 @@ body {
     /* Faster transform for tilt */
     transform-style: preserve-3d;
     perspective: 1000px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card:hover {
@@ -328,36 +505,95 @@ body {
 }
 
 /* Contact */
-.contact-text {
-    text-align: center;
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-}
-
-.social-links {
+/* Contact Form */
+.contact-container {
     display: flex;
-    justify-content: center;
-    gap: 1.5rem;
+    justify-content: space-between;
+    /* Push elements to the edges */
+    gap: 2rem;
     flex-wrap: wrap;
+    align-items: stretch;
+    /* Make them same height if possible */
+    width: 100%;
 }
 
-.social-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1.5rem;
+.glass-form {
     background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 2.5rem;
+    border-radius: 20px;
     border: 1px solid var(--card-border);
+    width: 100%;
+    flex: 2;
+    /* Take up more space */
+    min-width: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 1.2rem;
+    background: rgba(0, 0, 0, 0.3);
+    /* Darker background for contrast */
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
     color: var(--text-color);
-    text-decoration: none;
-    border-radius: 50px;
+    font-size: 1rem;
+    font-family: inherit;
     transition: all 0.3s;
 }
 
-.social-btn:hover {
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+}
+
+.social-links-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    flex: 1;
+    /* Take up remaining space */
+    min-width: 280px;
+    justify-content: center;
+}
+
+.social-links-vertical .social-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.social-links-vertical .social-btn:hover {
     background: var(--primary-color);
     color: #000;
-    transform: translateY(-3px);
+    transform: translateX(10px);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    border-color: transparent;
+}
+
+.social-links-vertical .social-btn i {
+    font-size: 1.3rem;
+    width: 25px;
+    text-align: center;
 }
 
 /* Footer */

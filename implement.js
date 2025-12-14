@@ -87,3 +87,206 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+// Interactive Circuit Background
+const canvas = document.getElementById('canvas1');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particlesArray;
+
+// Handle mouse interaction
+let mouse = {
+    x: null,
+    y: null,
+    radius: (canvas.height / 80) * (canvas.width / 80)
+}
+
+window.addEventListener('mousemove',
+    function (event) {
+        mouse.x = event.x;
+        mouse.y = event.y;
+    }
+);
+
+// Create Particle
+class Particle {
+    constructor(x, y, networkColor) {
+        this.x = x;
+        this.y = y;
+        this.directionX = (Math.random() * 2) - 1;
+        this.directionY = (Math.random() * 2) - 1;
+        this.size = (Math.random() * 3) + 1;
+        this.color = networkColor;
+    }
+
+    // Method to draw individual particle
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = 0.8;
+        ctx.fill();
+    }
+
+    // Check particle position, check mouse position, move the particle, draw the particle
+    update() {
+        if (this.x > canvas.width || this.x < 0) {
+            this.directionX = -this.directionX;
+        }
+        if (this.y > canvas.height || this.y < 0) {
+            this.directionY = -this.directionY;
+        }
+
+        // Check collision detection - mouse position / particle position
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < mouse.radius + this.size) {
+            if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
+                this.x += 2;
+            }
+            if (mouse.x > this.x && this.x > this.size * 10) {
+                this.x -= 2;
+            }
+            if (mouse.y < this.y && this.y < canvas.height - this.size * 10) {
+                this.y += 2;
+            }
+            if (mouse.y > this.y && this.y > this.size * 10) {
+                this.y -= 2;
+            }
+        }
+        // Move particle
+        this.x += this.directionX * 0.5; // slow speed
+        this.y += this.directionY * 0.5;
+
+        this.draw();
+    }
+}
+
+// Create particle array
+function init() {
+    particlesArray = [];
+    let numberOfParticles = (canvas.height * canvas.width) / 9000;
+    let networkColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+
+    for (let i = 0; i < numberOfParticles; i++) {
+        let size = (Math.random() * 5) + 1;
+        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+        let directionX = (Math.random() * 2) - 1;
+        let directionY = (Math.random() * 2) - 1;
+        let color = networkColor; // Use theme color
+
+        particlesArray.push(new Particle(x, y, color));
+    }
+}
+
+// Animation Loop
+function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+    for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+    }
+    connect();
+}
+
+// Check if particles are close enough to draw line
+function connect() {
+    let opacityValue = 1;
+    let networkColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+    for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+            let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+            if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                opacityValue = 1 - (distance / 20000);
+                const rgb = hexToRgb(networkColor) || { r: 0, g: 243, b: 255 }; // Fallback
+                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacityValue})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                ctx.stroke();
+            }
+        }
+    }
+}
+
+// Helper to convert hex to rgb
+function hexToRgb(hex) {
+    if (!hex) return null;
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+// Resize event
+window.addEventListener('resize',
+    function () {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        mouse.radius = ((canvas.height / 80) * (canvas.height / 80));
+        init();
+    }
+);
+
+// Mouse out event
+window.addEventListener('mouseout',
+    function () {
+        mouse.x = undefined;
+        mouse.y = undefined;
+    }
+);
+
+init();
+animate();
+
+// Visitor Counter Logic (Mock/Local)
+const visitCount = localStorage.getItem('page_visits') || 0;
+// Simulate multiple people by adding some random number to start or just plain count
+// For a personal site feel, let's start at a realistic base
+let displayedCount = parseInt(visitCount) + 1;
+
+localStorage.setItem('page_visits', displayedCount);
+const counterElement = document.getElementById('visit-count');
+if (counterElement) {
+    counterElement.innerText = displayedCount;
+}
+
+// Contact Form Logic (Simulated Database)
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+        const date = new Date().toLocaleString();
+
+        const newMessage = { name, email, message, date };
+
+        // Get existing messages or initialize empty array
+        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+        messages.push(newMessage);
+
+        // Save back to local storage
+        localStorage.setItem('messages', JSON.stringify(messages));
+
+        alert('Message Sent! (Saved to Local Mock Database)');
+        contactForm.reset();
+    });
+}
