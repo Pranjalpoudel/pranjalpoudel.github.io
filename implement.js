@@ -333,7 +333,7 @@ if (contactForm) {
 
             // 4. Email Operation
             console.log("Attempting to send email via EmailJS...");
-            await emailjs.send('service_cqxkf16', 'template_into7hk', {
+            await emailjs.send('service_a9ppxid', 'template_into7hk', {
                 from_name: name,
                 from_email: email,
                 message: message
