@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>404 - Page Not Found | Pranjal Poudel</title>
+
+    <!-- Absolute paths are critical for 404 pages because 404s can happen on any URL level -->
+    <link rel="icon" type="image/png" sizes="192x192" href="https://pranjalpoudel.com.np/favicon.png">
+    <link rel="apple-touch-icon" href="https://pranjalpoudel.com.np/favicon.png">
+    <link rel="canonical" href="https://pranjalpoudel.com.np/404.html">
+
+    <link rel="stylesheet" href="https://pranjalpoudel.com.np/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <a href="https://pranjalpoudel.com.np/" style="text-decoration: none; color: inherit;">
+                Pranjal<span class="dot">.</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Using inline styles for the error container to ensure structure even if CSS fails -->
+    <section class="hero"
+        style="height: 100vh; align-items: center; justify-content: center; text-align: center; display:flex; flex-direction:column;">
+        <div class="hero-content" style="z-index: 2;">
+            <h1 class="name" style="font-size: 8rem; margin: 0; color: var(--primary-color, #007bff);">404</h1>
+            <h2 class="title" style="margin-bottom: 2rem;">Page Not Found</h2>
+            <p class="description" style="max-width: 600px; margin: 0 auto 2rem auto;">
+                The link might be broken, or the page may have been moved.
+            </p>
+            <div class="hero-buttons" style="justify-content: center;">
+                <a href="https://pranjalpoudel.com.np/" class="btn btn-primary"><i class="fas fa-home"></i> Go Home</a>
+            </div>
+        </div>
+        <div class="glow-circle"></div>
+    </section>
+
+</body>
+
+</html>
