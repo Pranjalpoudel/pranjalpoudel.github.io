@@ -463,6 +463,8 @@
     </main>
 
     <script type="module">
+        import { adminPassword } from './config.js';
+
         // --- 1. Tab Switching Logic ---
         // Expose functions to window for HTML onclick access
         window.switchTab = function (tabId) {
@@ -634,7 +636,7 @@
         // Login Logic
         window.checkPassword = function () {
             const input = document.getElementById('password-input').value;
-            if (input === 'admin123') { // Default Password
+            if (input === adminPassword) { // Use imported password
                 sessionStorage.setItem('isLoggedIn', 'true');
                 document.getElementById('login-overlay').style.display = 'none';
                 window.loadDashboardData();
