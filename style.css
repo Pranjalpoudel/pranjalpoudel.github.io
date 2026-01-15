@@ -69,17 +69,20 @@ body {
 
 /* Navigation */
 .navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 1.5rem 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--nav-bg);
-    backdrop-filter: blur(10px);
+    padding: 1.5rem 10%;
+    position: fixed;
+    width: 100%;
+    top: 0;
     z-index: 1000;
-    border-bottom: 1px solid var(--card-border);
+    transition: 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+.hamburger {
+    display: none;
 }
 
 .logo {
@@ -794,11 +797,50 @@ footer i {
 @media (max-width: 768px) {
     .navbar {
         padding: 1rem 5%;
+        justify-content: space-between;
+    }
+
+    .hamburger {
+        display: block;
+        cursor: pointer;
+        z-index: 1001;
+        /* Above the menu overlay */
+    }
+
+    .hamburger i {
+        font-size: 1.5rem;
+        color: var(--text-color);
     }
 
     .nav-links {
-        display: none;
-        /* Simple hide for now, could add hamburger later */
+        position: fixed;
+        background: rgba(0, 0, 0, 0.95);
+        height: 100vh;
+        width: 100%;
+        top: 0;
+        left: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1000;
+    }
+
+    .nav-links.active {
+        transform: translateY(0);
+    }
+
+    .nav-links li {
+        margin: 1.5rem 0;
+    }
+
+    /* Ensure theme toggle remains visible or is part of the menu */
+    #theme-toggle {
+        display: block;
+        /* Force show */
+        z-index: 1002;
+        /* Ensure clickable */
     }
 
     .hero {
