@@ -157,8 +157,8 @@ body {
     justify-content: space-between;
     padding: 0 10%;
     position: relative;
-    overflow: hidden;
-    /* Ensure background elements don't overflow */
+    overflow: visible;
+    /* Changed from hidden to ensure no clipping for bots */
 }
 
 #canvas1 {
@@ -221,10 +221,18 @@ body {
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
     color: var(--text-color);
-    /* Fallback for bots/old browsers */
+    /* Base color first */
+    -webkit-text-fill-color: var(--text-color);
+    /* Standard fill first */
     animation: gradientText 5s linear infinite;
+}
+
+/* Only make text transparent if background-clip is actually supported */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+    .name {
+        -webkit-text-fill-color: transparent;
+    }
 }
 
 @keyframes gradientText {

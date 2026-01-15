@@ -53,9 +53,9 @@ cards.forEach(card => {
 // Scroll Reveal Animation 
 const revealElements = document.querySelectorAll('.reveal');
 
-// Hide elements initially via JS so they are visible if JS is disabled (good for SEO/bots)
-revealElements.forEach(el => el.classList.add('reveal-hidden'));
-
+// Don't hide them instantly - let them be visible so Google can see them.
+// We only hide them once the IntersectionObserver is ready and if we choose to.
+// Actually, it's safer for SEO to ONLY hide them if they are NOT in the viewport initially.
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
