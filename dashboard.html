@@ -462,6 +462,12 @@
         </div>
     </main>
 
+    <script>
+        // Check if opened via file:// protocol
+        if (window.location.protocol === 'file:') {
+            alert("Security Warning: You are opening this page directly from a file. \n\nInteractive features like the Dashboard Login and Cloud Messages will NOT work due to browser security (CORS). \n\nPlease run 'start_server.bat' and open http://localhost:8000/dashboard.html instead.");
+        }
+    </script>
     <script type="module">
         import { adminPassword } from './config.js';
 
