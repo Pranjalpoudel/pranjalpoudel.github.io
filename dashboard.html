@@ -30,8 +30,44 @@
             background: #0a0a0a;
             /* Darker background for dashboard */
             font-family: 'Outfit', sans-serif;
-            overflow: hidden;
-            /* Prevent body scroll, handle in main */
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Mobile Toggle Button */
+        #mobile-nav-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
         }
 
         /* Sidebar */
@@ -303,6 +339,64 @@
             align-items: center;
             gap: 10px;
         }
+
+        /* Mobile Responsive adjustments */
+        @media (max-width: 992px) {
+            :root {
+                --sidebar-width: 0px;
+            }
+
+            .sidebar {
+                left: -280px;
+                width: 280px;
+                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem;
+                padding-top: 5rem;
+            }
+
+            #mobile-nav-toggle {
+                display: flex;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .user-profile {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .login-box {
+                width: 90%;
+                padding: 1.5rem;
+            }
+
+            .chart-container {
+                height: 300px;
+                padding: 1rem;
+            }
+        }
     </style>
     <style>
         /* Login Overlay */
@@ -353,6 +447,13 @@
 </head>
 
 <body>
+    <!-- Mobile Menu Toggle -->
+    <button id="mobile-nav-toggle" aria-label="Toggle Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div id="login-overlay">
         <div class="login-box">
             <h2 style="color:white; margin-bottom:1rem;"><i class="fas fa-lock"></i> Admin Access</h2>
@@ -687,6 +788,39 @@
         window.simulateMessage = function () {
             alert("Local simulation disabled. Use the real contact form on the home page!");
         };
+
+        // Mobile Sidebar Toggle
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            const icon = mobileToggle.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+            } else {
+                icon.className = 'fas fa-bars';
+            }
+        }
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', toggleSidebar);
+        }
+        if (overlay) {
+            overlay.addEventListener('click', toggleSidebar);
+        }
+
+        // Close sidebar when clicking a menu item on mobile
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            });
+        });
     </script>
 </body>
 
