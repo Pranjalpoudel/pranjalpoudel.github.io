@@ -469,7 +469,20 @@
         }
     </script>
     <script type="module">
-        import { adminPassword } from './config.js';
+        let adminPassword;
+
+        // Try to load config dynamically to prevent crash if file is missing
+        try {
+            const config = await import('./config.js');
+            adminPassword = config.adminPassword;
+        } catch (e) {
+            console.warn("config.js not found. Dashboard login will be disabled.");
+            const errorEl = document.getElementById('login-error');
+            if (errorEl) {
+                errorEl.innerText = "Config Error: config.js missing on server.";
+                errorEl.style.display = 'block';
+            }
+        }
 
         // --- 1. Tab Switching Logic ---
         // Expose functions to window for HTML onclick access
