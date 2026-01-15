@@ -9,7 +9,7 @@ node_modules/
 .env.production.local
 
 # Secrets
-config.js
+# config.js is now safe to commit because it uses password hashing.
 
 # Logs
 npm-debug.log*

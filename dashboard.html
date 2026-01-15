@@ -469,12 +469,12 @@
         }
     </script>
     <script type="module">
-        let adminPassword;
+        let adminPasswordHash;
 
         // Try to load config dynamically to prevent crash if file is missing
         try {
             const config = await import('./config.js');
-            adminPassword = config.adminPassword;
+            adminPasswordHash = config.adminPasswordHash;
         } catch (e) {
             console.warn("config.js not found. Dashboard login will be disabled.");
             const errorEl = document.getElementById('login-error');
@@ -652,14 +652,26 @@
             }
         });
 
+        // Helper to hash password
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         // Login Logic
-        window.checkPassword = function () {
+        window.checkPassword = async function () {
             const input = document.getElementById('password-input').value;
-            if (input === adminPassword) { // Use imported password
+            const inputHash = await hashPassword(input);
+
+            if (inputHash === adminPasswordHash) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 document.getElementById('login-overlay').style.display = 'none';
                 window.loadDashboardData();
             } else {
+                document.getElementById('login-error').innerText = "Incorrect Password";
                 document.getElementById('login-error').style.display = 'block';
             }
         };
