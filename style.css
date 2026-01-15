@@ -789,7 +789,8 @@ footer i {
         flex-direction: column;
         justify-content: center;
         text-align: center;
-        padding-top: 80px;
+        padding: 80px 5% 2rem 5%;
+        /* Top Right Bottom Left */
     }
 
     .hero-content {
