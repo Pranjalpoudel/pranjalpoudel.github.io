@@ -797,7 +797,10 @@ footer i {
 @media (max-width: 768px) {
     .navbar {
         padding: 1rem 5%;
-        justify-content: space-between;
+        /* Align logo center? User asked for hamburger left. */
+        /* Currently: Hamburger (1), Logo (2) */
+        justify-content: flex-start;
+        gap: 20px;
     }
 
     .hamburger {
@@ -812,35 +815,44 @@ footer i {
         color: var(--text-color);
     }
 
+    /* Left Sidebar Style */
     .nav-links {
         position: fixed;
         background: rgba(0, 0, 0, 0.95);
         height: 100vh;
-        width: 100%;
+        width: 250px;
+        /* Sidebar width */
         top: 0;
         left: 0;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transform: translateY(-100%);
+        align-items: flex-start;
+        /* Left align items */
+        padding-top: 5rem;
+        padding-left: 2rem;
+        transform: translateX(-100%);
+        /* Slide from Left */
         transition: transform 0.3s ease-in-out;
         z-index: 1000;
+        border-right: 1px solid var(--glass-border);
     }
 
     .nav-links.active {
-        transform: translateY(0);
+        transform: translateX(0);
+        /* Show */
     }
 
     .nav-links li {
         margin: 1.5rem 0;
+        width: 100%;
     }
 
-    /* Ensure theme toggle remains visible or is part of the menu */
+    /* Theme Toggle inside Sidebar */
     #theme-toggle {
         display: block;
-        /* Force show */
-        z-index: 1002;
-        /* Ensure clickable */
+        margin-top: 1rem;
+        /* Make it look like a button in the list */
+        padding: 10px 20px;
+        width: fit-content;
     }
 
     .hero {
