@@ -50,13 +50,17 @@ cards.forEach(card => {
     });
 });
 
-// Scroll Reveal Animation
+// Scroll Reveal Animation 
 const revealElements = document.querySelectorAll('.reveal');
+
+// Hide elements initially via JS so they are visible if JS is disabled (good for SEO/bots)
+revealElements.forEach(el => el.classList.add('reveal-hidden'));
 
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('active');
+            entry.target.classList.remove('reveal-hidden');
         }
     });
 }, { threshold: 0.1 });

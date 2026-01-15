@@ -1,5 +1,5 @@
 // CONFIGURATION BUNDLE
-// This file is now safe to commit to Git as it does not contain plain-text secrets.
+// This file is safe to commit. It uses SHA-256 hashing for the password.
 
 const firebaseConfig = {
     apiKey: "AIzaSyDQ56boL_H08lvYEwJFkhzRyFOuP8x2CVs",
@@ -11,7 +11,7 @@ const firebaseConfig = {
     measurementId: "G-SJZN7GYQK4"
 };
 
-// SHA-256 hash of 'pranjal123'
-const adminPasswordHash = "0c097ec4e03978c8359a7dbaaf609bafd771b264f433989e22db60835f8e658";
+// SHA-256 hash
+const adminPasswordHash = "0c097ec4e03978c8359a7d5fbad51c817cecaf1f406baaf609bafd771b264f43";
 
 export { firebaseConfig, adminPasswordHash };
