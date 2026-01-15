@@ -217,21 +217,22 @@ body {
     font-size: 4rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    background: linear-gradient(to right, var(--text-color), var(--primary-color), var(--secondary-color));
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: var(--text-color);
-    /* Base color first */
-    -webkit-text-fill-color: var(--text-color);
-    /* Standard fill first */
-    animation: gradientText 5s linear infinite;
+    color: var(--primary-color);
+    /* Solid fallback color for bots */
+    position: relative;
+    z-index: 10;
 }
 
-/* Only make text transparent if background-clip is actually supported */
-@supports (-webkit-background-clip: text) or (background-clip: text) {
+/* Only apply gradient if a browser can definitely handle it. 
+   We use a more specific check to avoid half-supported cases. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
     .name {
+        background: linear-gradient(to right, var(--text-color), var(--primary-color), var(--secondary-color));
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
+        animation: gradientText 5s linear infinite;
     }
 }
 
@@ -256,6 +257,8 @@ body {
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 10;
 }
 
 .typewriter {
@@ -307,7 +310,9 @@ body {
     border: 2px solid rgba(0, 243, 255, 0.5);
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
     animation: morph 8s ease-in-out infinite, float 6s ease-in-out infinite;
-    z-index: 2;
+    z-index: 5;
+    /* Explicit z-index above canvas */
+    position: relative;
     backdrop-filter: blur(5px);
 }
 
@@ -767,19 +772,21 @@ footer i {
 
 /* Scroll Reveal Animation */
 .reveal {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.8s ease-out;
+    opacity: 1 !important;
+    /* Force visible for bots by default */
+    transform: none !important;
+    /* Remove initial transform */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 .reveal.reveal-hidden {
-    opacity: 0;
-    transform: translateY(30px);
+    opacity: 0 !important;
+    transform: translateY(30px) !important;
 }
 
 .reveal.active {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
 
 /* Mobile Responsive Layout */
