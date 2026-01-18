@@ -21,8 +21,8 @@
     /* Slate 800 */
     --text-muted: #64748b;
     /* Slate 500 */
-    --primary-color: aqua;
-    /* Premium Cyan (replacing "horrible blue") */
+    --primary-color: #2E5BFF;
+    /* Premium Blue (replacing "horrible blue") */
     --secondary-color: #db2777;
     /* Pink 600 */
     --card-bg: rgba(255, 255, 255, 0.7);
