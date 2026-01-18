@@ -924,22 +924,16 @@ footer i {
 
 @media (max-width: 768px) {
 
-    /* Navigation */
-    .nav-links {
-        display: none;
-        /* Hide nav links on mobile for simplicity or implement burger */
-    }
-
-    .navbar {
-        justify-content: space-between;
-        padding: 1.5rem 5%;
-    }
+    /* Navigation - CONFLICT REMOVED */
+    /* The main navigation styles are handled in the first media query above. */
 
     /* Hero */
     .hero {
         flex-direction: column-reverse;
         text-align: center;
         padding-top: 100px;
+        overflow-x: hidden;
+        /* Fix horizontal scrollbar */
     }
 
     .hero-content {
