@@ -273,17 +273,36 @@ window.addEventListener('mouseout',
 init();
 animate();
 
-// Visitor Counter Logic (Mock/Local)
-const visitCount = localStorage.getItem('page_visits') || 0;
-// Simulate multiple people by adding some random number to start or just plain count
-// For a personal site feel, let's start at a realistic base
-let displayedCount = parseInt(visitCount) + 1;
+// Visitor Counter Logic (Cloud + Local)
+import { db, doc, setDoc, updateDoc, increment } from './firebase-config.js';
 
-localStorage.setItem('page_visits', displayedCount);
-const counterElement = document.getElementById('visit-count');
-if (counterElement) {
-    counterElement.innerText = displayedCount;
+async function trackVisit() {
+    const today = new Date().toISOString().split('T')[0];
+    const visitCount = localStorage.getItem('page_visits') || 0;
+    let displayedCount = parseInt(visitCount) + 1;
+
+    // Update Local
+    localStorage.setItem('page_visits', displayedCount);
+    const counterElement = document.getElementById('visit-count');
+    if (counterElement) {
+        counterElement.innerText = displayedCount;
+    }
+
+    // Update Firebase
+    try {
+        // Increment daily counter
+        const dailyRef = doc(db, "analytics", today);
+        await setDoc(dailyRef, { count: increment(1) }, { merge: true });
+
+        // Increment global counter
+        const globalRef = doc(db, "analytics", "global");
+        await setDoc(globalRef, { total_visits: increment(1) }, { merge: true });
+    } catch (e) {
+        console.error("Error tracking visit:", e);
+    }
 }
+
+trackVisit();
 
 // Back to Top Button Logic
 const backToTopButton = document.getElementById("back-to-top");

@@ -211,31 +211,84 @@
             opacity: 1;
         }
 
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .stat-growth {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 0.2rem;
         }
 
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #00f3ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .growth-up {
+            color: var(--success-color);
         }
 
-        .stat-icon {
-            align-self: flex-start;
-            padding: 12px;
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);
+        .growth-down {
+            color: var(--danger-color);
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: flex-start;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 243, 255, 0.1);
             color: var(--accent-color);
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Chart View Toggles */
+        .chart-toggles {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .toggle-btn {
+            padding: 0.4rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-color);
+            color: #000;
         }
 
         /* Sections */
@@ -597,6 +650,143 @@
             margin-top: 1rem;
             font-weight: bold;
         }
+
+        /* Admin Profile Section */
+        .admin-profile-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.15);
+        }
+
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #00d4ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-email {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-role {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2) 0%, rgba(0, 212, 255, 0.1) 100%);
+            color: var(--accent-color);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--accent-color);
+        }
+
+        .session-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .session-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.15);
+        }
+
+        .session-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .session-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .session-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .session-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .session-value {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-profile-section {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -656,6 +846,45 @@
             </div>
         </div>
 
+        <!-- Admin Profile Section -->
+        <div class="admin-profile-section">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-avatar-large" id="profile-avatar">P</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profile-name">Pranjal Poudel</div>
+                    <div class="profile-email" id="profile-email">admin@pranjalpoudel.com.np</div>
+                    <span class="profile-role">
+                        <i class="fas fa-shield-alt"></i> Administrator
+                    </span>
+                </div>
+            </div>
+
+            <!-- Session Info Card -->
+            <div class="session-card">
+                <div class="session-title">
+                    <span class="live-indicator"></span>
+                    Current Session
+                </div>
+                <div class="session-info-item">
+                    <span class="session-label">Duration</span>
+                    <span class="session-value" id="session-duration">0m 0s</span>
+                </div>
+                <div class="session-info-item">
+                    <span class="session-label">Device</span>
+                    <span class="session-value" id="session-device">Desktop</span>
+                </div>
+                <div class="session-info-item">
+                    <span class="session-label">Browser</span>
+                    <span class="session-value" id="session-browser">Chrome</span>
+                </div>
+                <div class="session-info-item">
+                    <span class="session-label">Last Login</span>
+                    <span class="session-value" id="last-login">Just now</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Live Notice -->
         <div class="notice-box"
             style="border-color: var(--success-color); color: var(--success-color); background: rgba(46, 213, 115, 0.1);">
@@ -671,27 +900,46 @@
                     <div class="stat-icon"><i class="fas fa-eye"></i></div>
                     <div class="stat-value" id="total-visits">0</div>
                     <div class="stat-label">Total Visits</div>
+                    <div class="stat-growth" id="visits-growth">
+                        <span class="growth-up"><i class="fas fa-arrow-up"></i> 0%</span>
+                        <span style="color:var(--text-muted); margin-left:4px;">vs last 7d</span>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-envelope"></i></div>
                     <div class="stat-value" id="total-messages">0</div>
                     <div class="stat-label">Messages Received</div>
+                    <div class="stat-growth" id="messages-growth">
+                        <span class="growth-up"><i class="fas fa-arrow-up"></i> 0%</span>
+                        <span style="color:var(--text-muted); margin-left:4px;">vs last 7d</span>
+                    </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-code-branch"></i></div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-label">Projects Active</div>
+                    <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stat-value" id="avg-duration">0m</div>
+                    <div class="stat-label">Avg. Session</div>
+                    <div class="stat-growth">
+                        <span class="growth-up"><i class="fas fa-circle" style="font-size:0.4rem;"></i> Live</span>
+                    </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-star"></i></div>
-                    <div class="stat-value">4.9</div>
-                    <div class="stat-label">Average Rating</div>
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-value" id="growth-rate">0%</div>
+                    <div class="stat-label">Weekly Growth</div>
+                    <div class="stat-growth">
+                        <span style="color:var(--text-muted);">Current Week</span>
+                    </div>
                 </div>
             </div>
-
-            <h2 style="color:white; margin-bottom:1rem;">Recent Activity</h2>
-            <div class="chart-container">
-                <canvas id="mainChart"></canvas>
+            <!-- Recent Activity Feed -->
+            <div
+                style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; margin-top: 2rem;">
+                <h3 style="color:white; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-history" style="color:var(--accent-color);"></i> Recent Activity
+                </h3>
+                <div id="activity-log">
+                    <p style="color:grey; text-align:center; padding:1.5rem;">No recent activities logged.</p>
+                </div>
             </div>
         </div>
 
@@ -725,9 +973,16 @@
 
         <!-- Analytics Section -->
         <div id="analytics" class="section-container">
-            <h2 style="color:white; margin-bottom:1rem;">Traffic Sources</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="color:white;">Traffic Analytics</h2>
+                <div class="chart-toggles">
+                    <button class="toggle-btn active" onclick="updateChartPeriod('daily')">Daily</button>
+                    <button class="toggle-btn" onclick="updateChartPeriod('weekly')">Weekly</button>
+                    <button class="toggle-btn" onclick="updateChartPeriod('monthly')">Monthly</button>
+                </div>
+            </div>
             <div class="chart-container">
-                <canvas id="analyticsChart"></canvas>
+                <canvas id="mainChart"></canvas>
             </div>
         </div>
     </main>
@@ -754,7 +1009,131 @@
             }
         }
 
-        // --- 1. Tab Switching Logic ---
+        // --- 1. Session Management & Tracking ---
+
+        // Initialize session on page load
+        function initSession(isRefresh = false) {
+            const now = Date.now();
+            const session = {
+                startTime: now,
+                device: getDeviceType(),
+                browser: getBrowserInfo()
+            };
+            localStorage.setItem('currentSession', JSON.stringify(session));
+
+            // Record this login only if not a refresh
+            if (!isRefresh) {
+                recordLogin();
+            }
+
+            // Update UI
+            updateSessionUI();
+
+            // Start live duration counter
+            setInterval(updateSessionDuration, 1000);
+        }
+
+        // Get device type
+        function getDeviceType() {
+            const ua = navigator.userAgent;
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                return 'Tablet';
+            }
+            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                return 'Mobile';
+            }
+            return 'Desktop';
+        }
+
+        // Get browser info
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            let browser = 'Unknown';
+
+            if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
+            else if (ua.indexOf('SamsungBrowser') > -1) browser = 'Samsung';
+            else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) browser = 'Opera';
+            else if (ua.indexOf('Trident') > -1) browser = 'IE';
+            else if (ua.indexOf('Edge') > -1) browser = 'Edge';
+            else if (ua.indexOf('Chrome') > -1) browser = 'Chrome';
+            else if (ua.indexOf('Safari') > -1) browser = 'Safari';
+
+            return browser;
+        }
+
+        // Record login to history
+        function recordLogin() {
+            const loginHistory = JSON.parse(localStorage.getItem('loginHistory') || '[]');
+            const newLogin = {
+                timestamp: Date.now(),
+                device: getDeviceType(),
+                browser: getBrowserInfo()
+            };
+
+            // Keep only last 10 logins
+            loginHistory.unshift(newLogin);
+            if (loginHistory.length > 10) loginHistory.pop();
+
+            localStorage.setItem('loginHistory', JSON.stringify(loginHistory));
+        }
+
+        // Get last login (excluding current)
+        function getLastLogin() {
+            const loginHistory = JSON.parse(localStorage.getItem('loginHistory') || '[]');
+            if (loginHistory.length > 1) {
+                return loginHistory[1]; // Second item (first is current)
+            }
+            return null;
+        }
+
+        // Update session UI
+        function updateSessionUI() {
+            const session = JSON.parse(localStorage.getItem('currentSession') || '{}');
+
+            // Update device and browser
+            document.getElementById('session-device').textContent = session.device || 'Unknown';
+            document.getElementById('session-browser').textContent = session.browser || 'Unknown';
+
+            // Update last login
+            const lastLogin = getLastLogin();
+            if (lastLogin) {
+                const timeAgo = getTimeAgo(lastLogin.timestamp);
+                document.getElementById('last-login').textContent = timeAgo;
+            } else {
+                document.getElementById('last-login').textContent = 'First login';
+            }
+        }
+
+        // Update session duration (called every second)
+        function updateSessionDuration() {
+            const session = JSON.parse(localStorage.getItem('currentSession') || '{}');
+            if (!session.startTime) return;
+
+            const elapsed = Date.now() - session.startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+
+            let durationText = '';
+            if (minutes > 0) {
+                durationText = `${minutes}m ${seconds}s`;
+            } else {
+                durationText = `${seconds}s`;
+            }
+
+            document.getElementById('session-duration').textContent = durationText;
+        }
+
+        // Helper: Get time ago string
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            return `${Math.floor(seconds / 86400)}d ago`;
+        }
+
+        // --- 2. Password & Authentication ---g Logic ---
         // Expose functions to window for HTML onclick access
         window.switchTab = function (tabId) {
             // Update Sidebar Active State
@@ -1108,6 +1487,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('login-overlay').style.display = 'none';
+
+                // Initialize session (in refresh mode)
+                initSession(true);
+
                 window.loadDashboardData();
             }
         });
@@ -1121,18 +1504,32 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Login Logic
+        // Check password and initialize session
         window.checkPassword = async function () {
             const input = document.getElementById('password-input').value;
-            const inputHash = await hashPassword(input);
+            const errorMsg = document.getElementById('login-error');
 
-            if (inputHash === adminPasswordHash) {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                document.getElementById('login-overlay').style.display = 'none';
-                window.loadDashboardData();
-            } else {
-                document.getElementById('login-error').innerText = "Incorrect Password";
-                document.getElementById('login-error').style.display = 'block';
+            try {
+                const inputHash = await hashPassword(input);
+
+                if (inputHash === adminPasswordHash) {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    document.getElementById('login-overlay').style.display = 'none';
+
+                    // Initialize session tracking
+                    initSession();
+
+                    // Load dashboard data
+                    loadDashboardData();
+                } else {
+                    errorMsg.innerText = "Incorrect Password";
+                    errorMsg.style.display = 'block';
+                    document.getElementById('password-input').value = '';
+                }
+            } catch (e) {
+                console.error('Auth error:', e);
+                errorMsg.textContent = 'Authentication error';
+                errorMsg.style.display = 'block';
             }
         };
 
