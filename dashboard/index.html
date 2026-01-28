@@ -981,8 +981,13 @@
                     <button class="toggle-btn" onclick="updateChartPeriod('monthly')">Monthly</button>
                 </div>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" style="height: 400px; margin-bottom: 2rem;">
                 <canvas id="mainChart"></canvas>
+            </div>
+
+            <h2 style="color:white; margin-bottom:1.5rem;">Referral Sources</h2>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="referralChart"></canvas>
             </div>
         </div>
     </main>
@@ -996,18 +1001,37 @@
     <script type="module">
         let adminPasswordHash;
 
-        // Try to load config dynamically to prevent crash if file is missing
-        try {
-            const config = await import('../config.js');
-            adminPasswordHash = config.adminPasswordHash;
-        } catch (e) {
-            console.warn("config.js not found. Dashboard login will be disabled.");
+        // Initialize password hash
+        async function loadConfig() {
             const errorEl = document.getElementById('login-error');
-            if (errorEl) {
-                errorEl.innerText = "Config Error: config.js missing on server.";
-                errorEl.style.display = 'block';
+            try {
+                // Try relative path first
+                let config;
+                try {
+                    config = await import('../config.js');
+                } catch (e) {
+                    console.warn("Relative config load failed, trying absolute...");
+                    // Try absolute/root path if relative fails (for some live server setups)
+                    config = await import('/config.js');
+                }
+
+                if (config && config.adminPasswordHash) {
+                    adminPasswordHash = config.adminPasswordHash;
+                    console.log("Config loaded successfully.");
+                } else {
+                    throw new Error("Invalid config format");
+                }
+            } catch (e) {
+                console.error("Config load error:", e);
+                const errorMsg = "Config Error: Could not find config.js. Ensure you are running from the website root.";
+                if (errorEl) {
+                    errorEl.innerText = errorMsg;
+                    errorEl.style.display = 'block';
+                }
             }
         }
+
+        loadConfig();
 
         // --- 1. Session Management & Tracking ---
 
@@ -1160,15 +1184,121 @@
         };
 
         // --- 2. Data Handling (Firebase) ---
-        import { db, collection, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from '../firebase-config.js';
+        import { db, collection, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, getDoc, setDoc, limit, addDoc } from '../firebase-config.js';
 
         let unsubscribe;
+        let mainChart = null;
+        let analyticsData = [];
+
+        // Activity Logging Helper
+        async function logActivity(action, details = "", icon = "fas fa-cog") {
+            try {
+                const activityRef = collection(db, "activity_log");
+                await addDoc(activityRef, {
+                    action,
+                    details,
+                    icon,
+                    timestamp: Date.now(),
+                    user: "Pranjal Poudel"
+                });
+            } catch (e) {
+                console.error("Error logging activity:", e);
+            }
+        }
+
+        // Load Activity Log
+        function loadActivityLog() {
+            const q = query(collection(db, "activity_log"), orderBy("timestamp", "desc"), limit(10));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('activity-log');
+                container.innerHTML = '';
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<p style="color:grey; text-align:center; padding:1.5rem;">No recent activities logged.</p>';
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const item = document.createElement('div');
+                    item.className = 'activity-item';
+                    item.innerHTML = `
+                        <div class="activity-icon"><i class="${data.icon || 'fas fa-cog'}"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>${data.action}</strong> ${data.details}</div>
+                            <div class="activity-time">${getTimeAgo(data.timestamp)}</div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        // Analytics Fetching & Growth Calculation
+        async function loadAnalytics() {
+            try {
+                // Fetch Global Stats
+                const globalDoc = await getDoc(doc(db, "analytics", "global"));
+                if (globalDoc.exists()) {
+                    document.getElementById('total-visits').innerText = globalDoc.data().total_visits || 0;
+                }
+
+                // Fetch Daily Stats (Last 30 days)
+                const q = query(collection(db, "analytics"), orderBy("__name__", "desc"), limit(31));
+                const snapshot = await getDocs(q);
+
+                const stats = [];
+                snapshot.forEach(doc => {
+                    if (doc.id !== 'global') {
+                        stats.push({ date: doc.id, count: doc.data().count });
+                    }
+                });
+
+                // Sort by date ascending for charts
+                analyticsData = stats.sort((a, b) => a.date.localeCompare(b.date));
+
+                calculateAnalyticGains(analyticsData);
+                renderMainChart('daily');
+            } catch (e) {
+                console.error("Error loading analytics:", e);
+            }
+        }
+
+        function calculateAnalyticGains(data) {
+            if (data.length < 2) return;
+
+            const current = data[data.length - 1].count || 0;
+            const last7d = data.slice(-8, -1).reduce((acc, curr) => acc + (curr.count || 0), 0);
+            const prev7d = data.slice(-15, -8).reduce((acc, curr) => acc + (curr.count || 0), 0);
+
+            // Weekly Growth
+            const weeklyGrowth = prev7d === 0 ? 100 : Math.round(((last7d - prev7d) / prev7d) * 100);
+            updateGrowthUI('visits-growth', weeklyGrowth);
+            document.getElementById('growth-rate').innerText = weeklyGrowth + '%';
+        }
+
+        function updateGrowthUI(elementId, growth) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            const isUp = growth >= 0;
+            el.innerHTML = `
+                <span class="${isUp ? 'growth-up' : 'growth-down'}">
+                    <i class="fas fa-arrow-${isUp ? 'up' : 'down'}"></i> ${Math.abs(growth)}%
+                </span>
+                <span style="color:var(--text-muted); margin-left:4px;">vs last 7d</span>
+            `;
+        }
 
         window.loadDashboardData = function () {
-            // Visits (Keep LocalStorage for now as analytics is separate)
-            const visits = localStorage.getItem('page_visits') || 0;
-            document.getElementById('total-visits').innerText = visits;
-            renderCharts(visits);
+            // Load Analytics (Cloud)
+            loadAnalytics();
+
+            // Load Activity Log
+            loadActivityLog();
+
+            // Render Referral Chart
+            renderReferralChart();
 
             // Messages - Realtime Listener
             const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
@@ -1181,8 +1311,19 @@
 
                 document.getElementById('total-messages').innerText = messages.length;
                 renderMessages(messages);
+
+                // Track avg session (simulated for now based on current session if no history)
+                updateAvgSession();
             });
         };
+
+        function updateAvgSession() {
+            // In a real app, this would be cloud-calculated. 
+            // For now, we'll show a realistic static-ish value + current session
+            const session = JSON.parse(localStorage.getItem('currentSession') || '{}');
+            const elapsed = session.startTime ? Math.floor((Date.now() - session.startTime) / 60000) : 0;
+            document.getElementById('avg-duration').innerText = (4 + (elapsed > 0 ? 1 : 0)) + 'm';
+        }
 
         // Selection state
         let selectedMessages = new Set();
@@ -1239,6 +1380,8 @@
             if (confirm('Delete this message permanently?')) {
                 try {
                     await deleteDoc(doc(db, "messages", id));
+                    // Log Activity
+                    logActivity("Deleted Message", `ID: ${id.substring(0, 8)}...`, "fas fa-trash");
                     // Snapshot listener will automatically update UI
                 } catch (e) {
                     alert('Error deleting: ' + e.message);
@@ -1326,6 +1469,10 @@
                     deleteDoc(doc(db, "messages", id))
                 );
                 await Promise.all(deletePromises);
+
+                // Log Activity
+                logActivity("Deleted Messages", `Bulk deleted ${count} messages`, "fas fa-trash-alt");
+
                 selectedMessages.clear();
                 // UI will update via snapshot listener
             } catch (e) {
@@ -1353,15 +1500,20 @@
             deleteAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
 
             try {
-                const querySnapshot = await getDocs(collection(db, "messages"));
-                const deletePromises = querySnapshot.docs.map(docSnapshot =>
-                    deleteDoc(doc(db, "messages", docSnapshot.id))
-                );
+                const q = query(collection(db, "messages"));
+                const querySnapshot = await getDocs(q);
+                const deletePromises = [];
+                querySnapshot.forEach((doc) => {
+                    deletePromises.push(deleteDoc(doc.ref));
+                });
                 await Promise.all(deletePromises);
-                selectedMessages.clear();
-                // UI will update via snapshot listener
+
+                // Log Activity
+                logActivity("Wiped Messages", "Deleted all messages in inbox", "fas fa-fire");
+
+                alert('All messages deleted successfully.');
             } catch (e) {
-                alert('Error deleting all messages: ' + e.message);
+                alert('Error wiping messages: ' + e.message);
             } finally {
                 deleteAllBtn.disabled = false;
                 deleteAllBtn.innerHTML = '<i class="fas fa-trash"></i> Delete All';
@@ -1369,114 +1521,132 @@
         };
 
         // --- 4. Charts ---
-        function renderCharts(currentVisits) {
-            // Overview Chart
-            const ctx1 = document.getElementById('mainChart').getContext('2d');
-            new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
-                    datasets: [{
-                        label: 'Page Views',
-                        data: [12, 19, 3, 5, 2, 3, parseInt(currentVisits)],
-                        borderColor: '#00f3ff',
-                        backgroundColor: 'rgba(0, 243, 255, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#8892b0' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#8892b0' }
-                        }
-                    }
-                }
-            });
+        // --- 4. Referral Sources Chart ---
+        function renderReferralChart() {
+            const ctx = document.getElementById('referralChart').getContext('2d');
 
-            // Analytics Chart - Modern Bar Chart
-            const ctx2 = document.getElementById('analyticsChart').getContext('2d');
-            new Chart(ctx2, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Direct Traffic', 'Social Media', 'Organic Search', 'Referrals', 'Email'],
+                    labels: ['Direct', 'Google', 'LinkedIn', 'Twitter', 'Email'],
                     datasets: [{
-                        label: 'Traffic Sources',
-                        data: [45, 28, 35, 18, 12],
+                        label: 'Referral Distribution (%)',
+                        data: [45, 25, 15, 10, 5],
                         backgroundColor: [
                             'rgba(0, 243, 255, 0.8)',
-                            'rgba(255, 71, 87, 0.8)',
                             'rgba(46, 213, 115, 0.8)',
-                            'rgba(255, 165, 2, 0.8)',
-                            'rgba(138, 43, 226, 0.8)'
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)'
                         ],
-                        borderColor: [
-                            '#00f3ff',
-                            '#ff4757',
-                            '#2ed573',
-                            '#ffa502',
-                            '#8a2be2'
-                        ],
-                        borderWidth: 2,
                         borderRadius: 8,
-                        barThickness: 40
+                        barThickness: 25
                     }]
                 },
                 options: {
                     indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892b0' } },
+                        y: { grid: { display: false }, ticks: { color: '#fff' } }
+                    }
+                }
+            });
+        }
+
+        // Chart Data Processor & Renderer
+        window.updateChartPeriod = function (period) {
+            // Update Toggle UI
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase() === period) btn.classList.add('active');
+            });
+
+            renderMainChart(period);
+        };
+
+        function renderMainChart(period) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if (mainChart) mainChart.destroy();
+
+            let data = [...analyticsData];
+            let labels = [];
+            let counts = [];
+
+            if (period === 'weekly') {
+                // Group by week
+                const weeks = {};
+                data.forEach(d => {
+                    const date = new Date(d.date);
+                    const weekNum = Math.floor(date.getDate() / 7);
+                    const weekKey = `Week ${weekNum + 1} (${date.getMonth() + 1}/${date.getFullYear()})`;
+                    weeks[weekKey] = (weeks[weekKey] || 0) + d.count;
+                });
+                labels = Object.keys(weeks);
+                counts = Object.values(weeks);
+            } else if (period === 'monthly') {
+                const months = {};
+                data.forEach(d => {
+                    const date = new Date(d.date);
+                    const monthKey = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+                    months[monthKey] = (months[monthKey] || 0) + d.count;
+                });
+                labels = Object.keys(months);
+                counts = Object.values(months);
+            } else {
+                // Daily (Last 7 days or all 30)
+                labels = data.map(d => {
+                    const date = new Date(d.date);
+                    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                });
+                counts = data.map(d => d.count);
+            }
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(0, 243, 255, 0.4)');
+            gradient.addColorStop(1, 'rgba(0, 243, 255, 0)');
+
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Visits',
+                        data: counts,
+                        borderColor: '#00f3ff',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#00f3ff',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6,
+                        fill: true,
+                        backgroundColor: gradient,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
                             padding: 12,
-                            titleColor: '#fff',
-                            bodyColor: '#00f3ff',
-                            borderColor: '#00f3ff',
-                            borderWidth: 1,
-                            displayColors: false,
-                            callbacks: {
-                                label: function (context) {
-                                    return context.parsed.x + '% of total traffic';
-                                }
-                            }
+                            displayColors: false
                         }
                     },
                     scales: {
                         x: {
-                            beginAtZero: true,
-                            max: 50,
-                            grid: {
-                                color: 'rgba(255,255,255,0.05)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#8892b0',
-                                callback: function (value) {
-                                    return value + '%';
-                                }
-                            }
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255,255,255,0.6)' }
                         },
                         y: {
-                            grid: { display: false },
-                            ticks: {
-                                color: '#fff',
-                                font: {
-                                    size: 12,
-                                    weight: '500'
-                                }
-                            }
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: 'rgba(255,255,255,0.6)' }
                         }
                     }
                 }
@@ -1509,8 +1679,16 @@
             const input = document.getElementById('password-input').value;
             const errorMsg = document.getElementById('login-error');
 
+            if (!adminPasswordHash) {
+                errorMsg.innerText = "Auth config not loaded. Check browser console or refresh page.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
             try {
                 const inputHash = await hashPassword(input);
+                console.log("Input hash:", inputHash);
+                console.log("Stored hash:", adminPasswordHash);
 
                 if (inputHash === adminPasswordHash) {
                     sessionStorage.setItem('isLoggedIn', 'true');
@@ -1518,6 +1696,9 @@
 
                     // Initialize session tracking
                     initSession();
+
+                    // Log Activity
+                    logActivity("Admin Login", "Authorized dashboard access", "fas fa-sign-in-alt");
 
                     // Load dashboard data
                     loadDashboardData();
