@@ -2,7 +2,7 @@
 User-agent: *
 
 # Hide your dashboard page
-Disallow: /dashboard.html
+Disallow: /dashboard/
 
 # Ensure Google can see your favicon and images
 Allow: /favicon.png
