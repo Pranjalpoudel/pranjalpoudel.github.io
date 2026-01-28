@@ -184,32 +184,58 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00f3ff, #00d4ff);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
             border-color: var(--accent-color);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.2);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
         .stat-label {
             color: var(--text-muted);
             font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #fff;
+            background: linear-gradient(135deg, #fff 0%, #00f3ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-icon {
             align-self: flex-start;
-            padding: 10px;
-            background: rgba(0, 243, 255, 0.1);
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);
             color: var(--accent-color);
             border-radius: 12px;
             margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.2);
         }
 
         /* Sections */
@@ -282,27 +308,51 @@
         }
 
         .btn-danger {
-            background: var(--danger-color);
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
             color: white;
             border: none;
             padding: 0.6rem 1.2rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-danger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-danger:hover:not(:disabled)::before {
+            left: 100%;
         }
 
         .btn-danger:hover:not(:disabled) {
-            background: #ff6b81;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-danger:active:not(:disabled) {
+            transform: translateY(0);
         }
 
         .btn-danger:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
         .select-all-container {
@@ -369,21 +419,44 @@
 
         /* Buttons */
         .btn-action {
-            background: var(--accent-color);
+            background: linear-gradient(135deg, #00f3ff 0%, #00d4ff 100%);
             color: #000;
             border: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-action:hover::before {
+            left: 100%;
         }
 
         .btn-action:hover {
-            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
         }
 
         /* Chart Container */
@@ -952,28 +1025,80 @@
                 }
             });
 
-            // Analytics Chart (Polar Area)
+            // Analytics Chart - Modern Bar Chart
             const ctx2 = document.getElementById('analyticsChart').getContext('2d');
             new Chart(ctx2, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
-                    labels: ['Direct', 'Social Media', 'Organic Search', 'Referral'],
+                    labels: ['Direct Traffic', 'Social Media', 'Organic Search', 'Referrals', 'Email'],
                     datasets: [{
-                        data: [40, 25, 20, 15],
+                        label: 'Traffic Sources',
+                        data: [45, 28, 35, 18, 12],
                         backgroundColor: [
+                            'rgba(0, 243, 255, 0.8)',
+                            'rgba(255, 71, 87, 0.8)',
+                            'rgba(46, 213, 115, 0.8)',
+                            'rgba(255, 165, 2, 0.8)',
+                            'rgba(138, 43, 226, 0.8)'
+                        ],
+                        borderColor: [
                             '#00f3ff',
                             '#ff4757',
                             '#2ed573',
-                            '#ffa502'
+                            '#ffa502',
+                            '#8a2be2'
                         ],
-                        borderWidth: 0
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        barThickness: 40
                     }]
                 },
                 options: {
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right', labels: { color: '#fff' } }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#00f3ff',
+                            borderColor: '#00f3ff',
+                            borderWidth: 1,
+                            displayColors: false,
+                            callbacks: {
+                                label: function (context) {
+                                    return context.parsed.x + '% of total traffic';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 50,
+                            grid: {
+                                color: 'rgba(255,255,255,0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#8892b0',
+                                callback: function (value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#fff',
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            }
+                        }
                     }
                 }
             });
