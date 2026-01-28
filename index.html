@@ -7,10 +7,10 @@
     <meta name="robots" content="index, follow">
     <meta name="google-site-verification" content="Z6pmettdfDylHZk-JRME9tgONbeN5T8wN9YlE_AsX1M" />
     <title>Pranjal Poudel portfolio | Electronic & Information Engineer </title>
-    <link rel="shortcut icon" href="https://pranjalpoudel.com.np/favicon.png" type="image/png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://pranjalpoudel.com.np/favicon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://pranjalpoudel.com.np/favicon.png">
-    <link rel="apple-touch-icon" href="https://pranjalpoudel.com.np/favicon.png">
+    <link rel="shortcut icon" href="https://pranjalpoudel.com.np/favicon-optimized.png" type="image/png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://pranjalpoudel.com.np/favicon-optimized.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://pranjalpoudel.com.np/favicon-optimized.png">
+    <link rel="apple-touch-icon" href="https://pranjalpoudel.com.np/favicon-optimized.png">
 
     <link rel="stylesheet" href="style.css">
 
@@ -82,14 +82,16 @@
     <meta property="twitter:description"
         content="Pranjal Poudel - Electronic & Information Engineer. Bridging hardware and software. Portfolio of projects and skills.">
     <meta property="twitter:image" content="https://pranjalpoudel.com.np/pic.jpg">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" async defer>
     </script>
     <script type="text/javascript">
-        (function () {
-            emailjs.init({
-                publicKey: "LFPFxLemx1fOeOGCg",
-            });
-        })();
+        window.addEventListener('DOMContentLoaded', function () {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init({
+                    publicKey: "LFPFxLemx1fOeOGCg",
+                });
+            }
+        });
     </script>
 </head>
 
@@ -152,7 +154,10 @@
         </div>
         <!-- Particle/Circuit visual can go here or be background -->
         <div class="glow-circle"></div>
-        <img src="pic.jpg" alt="Pranjal Poudel - Electronic Engineer and Web Developer" class="profile-img">
+        <picture>
+            <source srcset="pic.webp" type="image/webp">
+            <img src="pic.jpg" alt="Pranjal Poudel - Electronic Engineer and Web Developer" class="profile-img">
+        </picture>
         <canvas id="canvas1"></canvas>
     </section>
 
