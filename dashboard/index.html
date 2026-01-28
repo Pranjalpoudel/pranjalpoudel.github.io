@@ -998,6 +998,18 @@
         if (window.location.protocol === 'file:') {
             alert("Security Warning: You are opening this page directly from a file. \n\nInteractive features like the Dashboard Login and Cloud Messages will NOT work due to browser security (CORS). \n\nPlease run 'start_server.bat' and open http://localhost:8000/dashboard/ instead.");
         }
+
+        // Safe Login Placeholder - Provides feedback if the main module fails to load
+        window.checkPassword = function () {
+            const errorEl = document.getElementById('login-error');
+            const msg = "Dashboard is still loading or a script error occurred. Please refresh or check the console (F12).";
+            if (errorEl) {
+                errorEl.innerText = msg;
+                errorEl.style.display = 'block';
+            } else {
+                alert(msg);
+            }
+        };
     </script>
     <script type="module">
         let adminPasswordHash;
@@ -1185,15 +1197,38 @@
         };
 
         // --- 2. Data Handling (Firebase) ---
-        import { db, collection, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, getDoc, setDoc, limit, addDoc } from '../firebase-config.js';
-
+        let db, collection, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, getDoc, setDoc, limit, addDoc;
         let unsubscribe;
         let mainChart = null;
         let analyticsData = [];
 
+        // Dynamic Firebase Import to prevent total crash on 404
+        async function initFirebase() {
+            try {
+                const fb = await import('../firebase-config.js');
+                db = fb.db;
+                collection = fb.collection;
+                onSnapshot = fb.onSnapshot;
+                query = fb.query;
+                orderBy = fb.orderBy;
+                deleteDoc = fb.deleteDoc;
+                doc = fb.doc;
+                getDocs = fb.getDocs;
+                getDoc = fb.getDoc;
+                setDoc = fb.setDoc;
+                limit = fb.limit;
+                addDoc = fb.addDoc;
+                return true;
+            } catch (e) {
+                console.error("Firebase load failed:", e);
+                return false;
+            }
+        }
+
         // Activity Logging Helper
         async function logActivity(action, details = "", icon = "fas fa-cog") {
             try {
+                if (!db || !addDoc) return;
                 const activityRef = collection(db, "activity_log");
                 await addDoc(activityRef, {
                     action,
@@ -1291,7 +1326,14 @@
             `;
         }
 
-        window.loadDashboardData = function () {
+        window.loadDashboardData = async function () {
+            // Wait for Firebase to initialize
+            const success = await initFirebase();
+            if (!success) {
+                console.error("Cannot load dashboard data: Firebase initialization failed.");
+                return;
+            }
+
             // Load Analytics (Cloud)
             loadAnalytics();
 
