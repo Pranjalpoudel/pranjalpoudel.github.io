@@ -232,6 +232,7 @@
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             padding: 1.5rem;
+            padding-left: 3.5rem;
             border-radius: 16px;
             margin-bottom: 1rem;
             transition: all 0.3s ease;
@@ -242,6 +243,86 @@
         .message-card:hover {
             border-color: rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.06);
+        }
+
+        .message-card.selected {
+            border-color: var(--accent-color);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .message-checkbox {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-bar-left {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .action-bar-right {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #ff6b81;
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .select-all-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+        }
+
+        .message-count {
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
         .msg-header {
@@ -543,12 +624,27 @@
 
         <!-- Messages Section -->
         <div id="messages" class="section-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="color:white;">Inbox</h2>
-                <button class="btn-action" onclick="simulateMessage()">
-                    <i class="fas fa-plus"></i> Simulate Message
-                </button>
+            <h2 style="color:white; margin-bottom: 1.5rem;">Inbox</h2>
+
+            <!-- Action Bar -->
+            <div class="action-bar" id="action-bar" style="display: none;">
+                <div class="action-bar-left">
+                    <div class="select-all-container">
+                        <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll()">
+                        <label for="select-all-checkbox">Select All</label>
+                    </div>
+                    <span class="message-count" id="selection-count">0 selected</span>
+                </div>
+                <div class="action-bar-right">
+                    <button class="btn-danger" id="delete-selected-btn" onclick="deleteSelected()" disabled>
+                        <i class="fas fa-trash-alt"></i> Delete Selected
+                    </button>
+                    <button class="btn-danger" id="delete-all-btn" onclick="deleteAllMessages()">
+                        <i class="fas fa-trash"></i> Delete All
+                    </button>
+                </div>
             </div>
+
             <div id="msg-container" class="messages-list">
                 <!-- Messages will be injected here -->
             </div>
@@ -612,7 +708,7 @@
         };
 
         // --- 2. Data Handling (Firebase) ---
-        import { db, collection, onSnapshot, query, orderBy, deleteDoc, doc } from '../firebase-config.js';
+        import { db, collection, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from '../firebase-config.js';
 
         let unsubscribe;
 
@@ -636,19 +732,38 @@
             });
         };
 
+        // Selection state
+        let selectedMessages = new Set();
+
         function renderMessages(messages) {
             const container = document.getElementById('msg-container');
+            const actionBar = document.getElementById('action-bar');
             container.innerHTML = '';
 
             if (messages.length === 0) {
                 container.innerHTML = '<p style="color:grey; text-align:center; padding:2rem;">No messages yet.</p>';
+                actionBar.style.display = 'none';
                 return;
             }
+
+            // Show action bar when there are messages
+            actionBar.style.display = 'flex';
 
             messages.forEach((msg) => {
                 const div = document.createElement('div');
                 div.className = 'message-card';
+                div.id = `msg-${msg.id}`;
+
+                // Check if this message is selected
+                if (selectedMessages.has(msg.id)) {
+                    div.classList.add('selected');
+                }
+
                 div.innerHTML = `
+                    <input type="checkbox" class="message-checkbox" 
+                           data-msg-id="${msg.id}" 
+                           onchange="toggleMessageSelection('${msg.id}')"
+                           ${selectedMessages.has(msg.id) ? 'checked' : ''}>
                     <div class="msg-header">
                         <div class="msg-author">
                             <div class="user-avatar" style="width:25px; height:25px; font-size:0.8rem;">${msg.name.charAt(0)}</div>
@@ -663,6 +778,8 @@
                 `;
                 container.appendChild(div);
             });
+
+            updateSelectionUI();
         }
 
         // Expose delete function to window since module scope is isolated
@@ -677,10 +794,127 @@
             }
         }
 
-        // Remove simulate button logic that used local storage
-        window.simulateMessage = function () {
-            alert("Local simulation disabled. Use the real contact form on the home page!");
+        // Selection management functions
+        window.toggleMessageSelection = function (id) {
+            if (selectedMessages.has(id)) {
+                selectedMessages.delete(id);
+                document.getElementById(`msg-${id}`)?.classList.remove('selected');
+            } else {
+                selectedMessages.add(id);
+                document.getElementById(`msg-${id}`)?.classList.add('selected');
+            }
+            updateSelectionUI();
+        };
+
+        window.toggleSelectAll = function () {
+            const checkboxes = document.querySelectorAll('.message-checkbox');
+            const selectAllCheckbox = document.getElementById('select-all-checkbox');
+
+            if (selectAllCheckbox.checked) {
+                // Select all
+                checkboxes.forEach(cb => {
+                    const id = cb.dataset.msgId;
+                    selectedMessages.add(id);
+                    cb.checked = true;
+                    document.getElementById(`msg-${id}`)?.classList.add('selected');
+                });
+            } else {
+                // Deselect all
+                selectedMessages.clear();
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    const id = cb.dataset.msgId;
+                    document.getElementById(`msg-${id}`)?.classList.remove('selected');
+                });
+            }
+            updateSelectionUI();
+        };
+
+        function updateSelectionUI() {
+            const count = selectedMessages.size;
+            const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+            const selectionCount = document.getElementById('selection-count');
+            const selectAllCheckbox = document.getElementById('select-all-checkbox');
+            const totalMessages = document.querySelectorAll('.message-checkbox').length;
+
+            // Update count text
+            selectionCount.textContent = `${count} selected`;
+
+            // Enable/disable delete selected button
+            deleteSelectedBtn.disabled = count === 0;
+
+            // Update select all checkbox state
+            if (count === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            } else if (count === totalMessages) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            }
         }
+
+        // Bulk delete functions
+        window.deleteSelected = async function () {
+            const count = selectedMessages.size;
+            if (count === 0) return;
+
+            if (!confirm(`Delete ${count} selected message${count > 1 ? 's' : ''} permanently?`)) {
+                return;
+            }
+
+            const deleteBtn = document.getElementById('delete-selected-btn');
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+            try {
+                const deletePromises = Array.from(selectedMessages).map(id =>
+                    deleteDoc(doc(db, "messages", id))
+                );
+                await Promise.all(deletePromises);
+                selectedMessages.clear();
+                // UI will update via snapshot listener
+            } catch (e) {
+                alert('Error deleting messages: ' + e.message);
+            } finally {
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete Selected';
+            }
+        };
+
+        window.deleteAllMessages = async function () {
+            const totalMessages = document.querySelectorAll('.message-checkbox').length;
+            if (totalMessages === 0) return;
+
+            if (!confirm(`⚠️ WARNING: Delete ALL ${totalMessages} messages permanently?\n\nThis action cannot be undone!`)) {
+                return;
+            }
+
+            // Double confirmation for safety
+            if (!confirm('Are you absolutely sure? This will delete EVERYTHING!')) {
+                return;
+            }
+
+            const deleteAllBtn = document.getElementById('delete-all-btn');
+            deleteAllBtn.disabled = true;
+            deleteAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "messages"));
+                const deletePromises = querySnapshot.docs.map(docSnapshot =>
+                    deleteDoc(doc(db, "messages", docSnapshot.id))
+                );
+                await Promise.all(deletePromises);
+                selectedMessages.clear();
+                // UI will update via snapshot listener
+            } catch (e) {
+                alert('Error deleting all messages: ' + e.message);
+            } finally {
+                deleteAllBtn.disabled = false;
+                deleteAllBtn.innerHTML = '<i class="fas fa-trash"></i> Delete All';
+            }
+        };
 
         // --- 4. Charts ---
         function renderCharts(currentVisits) {
