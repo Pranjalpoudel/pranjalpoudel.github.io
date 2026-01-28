@@ -829,7 +829,7 @@
                 <span>System Health</span>
             </div>
             <div class="menu-item" onclick="switchTab('messages')">
-                <i class="fas fa-chart-line"></i> Analytics
+                <i class="fas fa-envelope"></i> Messages
             </div>
         </nav>
 
@@ -895,12 +895,36 @@
             </div>
 
             <!-- Live Notice -->
-            <div class="notice-box"
-                style="border-color: var(--success-color); color: var(--success-color); background: rgba(46, 213, 115, 0.1); margin-bottom: 2rem;">
-                <i class="fas fa-check-circle"></i>
-                <span><strong>Live:</strong> Connected to Cloud Database. You will receive real-time messages from
-                    visitors.</span>
+            <div class="notice-box" id="cloud-status-box"
+                style="border-color: var(--warning-color); color: var(--warning-color); background: rgba(255, 165, 2, 0.1); margin-bottom: 1rem;">
+                <i class="fas fa-sync fa-spin"></i>
+                <span>Connecting to Cloud Database... (Check F12 if this takes too long)</span>
             </div>
+
+            <!-- Diagnostic Center (Hidden by default) -->
+            <div id="diagnostic-center"
+                style="display: none; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; margin-bottom: 2rem; font-family: monospace; font-size: 0.85rem; color: #ced4da;">
+                <div
+                    style="color: white; font-weight: bold; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3rem;">
+                    <i class="fas fa-stethoscope"></i> Cloud Diagnostics
+                </div>
+                <div id="diag-config">🔘 Config File: <span style="color:grey">Checking...</span></div>
+                <div id="diag-firebase">🔘 Firebase SDK: <span style="color:grey">Checking...</span></div>
+                <div id="diag-db">🔘 Firestore Connection: <span style="color:grey">Checking...</span></div>
+                <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                    <button onclick="retryConnection()"
+                        style="background: var(--accent-color); border: none; color: black; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Retry
+                        Sync</button>
+                    <button onclick="testFirestoreWrite()"
+                        style="background: #2ed573; border: none; color: black; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Test
+                        Write</button>
+                </div>
+            </div>
+
+            <button onclick="toggleDiagnostics()"
+                style="background: none; border: 1px solid var(--glass-border); color: grey; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; margin-bottom: 2rem;">
+                <i class="fas fa-terminal"></i> Toggle Technical Diagnostics
+            </button>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-eye"></i></div>
@@ -1065,27 +1089,59 @@
     <script type="module">
         let adminPasswordHash;
 
+        // --- Diagnostics & Recovery ---
+        window.toggleDiagnostics = function () {
+            const diag = document.getElementById('diagnostic-center');
+            diag.style.display = diag.style.display === 'none' ? 'block' : 'none';
+        };
+
+        function updateDiag(id, status, color) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const label = id.replace('diag-', '').charAt(0).toUpperCase() + id.replace('diag-', '').slice(1);
+            el.innerHTML = `🟢 ${label}: <span style="color:${color}">${status}</span>`;
+        }
+
+        window.retryConnection = () => window.location.reload();
+
+        window.testFirestoreWrite = async function () {
+            try {
+                if (!db) throw new Error("Firebase not initialized");
+                const testRef = collection(db, "activity_log");
+                await addDoc(testRef, {
+                    action: "Manual connection test",
+                    details: "Triggered from Diagnostic Center",
+                    timestamp: Date.now(),
+                    user: "Pranjal Poudel"
+                });
+                alert("Write Success! Check 'Activity Log' below.");
+            } catch (e) {
+                alert("Write Failed: " + e.message);
+            }
+        };
+
         // Initialize password hash
         async function loadConfig() {
             const errorEl = document.getElementById('login-error');
             try {
-                // Try relative path first
+                updateDiag('diag-config', 'Searching...', 'orange');
                 let config;
                 try {
                     config = await import('../config.js');
                 } catch (e) {
                     console.warn("Relative config load failed, trying absolute...");
-                    // Try absolute/root path if relative fails (for some live server setups)
                     config = await import('/config.js');
                 }
 
                 if (config && config.adminPasswordHash) {
                     adminPasswordHash = config.adminPasswordHash;
                     console.log("Config loaded successfully.");
+                    updateDiag('diag-config', 'Loaded', '#2ed573');
                 } else {
                     throw new Error("Invalid config format");
                 }
             } catch (e) {
+                updateDiag('diag-config', 'Not Found', 'red');
                 console.error("Config load error:", e);
                 const errorMsg = "Config Error: Could not find config.js. Ensure you are running from the website root.";
                 if (errorEl) {
@@ -1257,6 +1313,7 @@
         // Dynamic Firebase Import to prevent total crash on 404
         async function initFirebase() {
             try {
+                updateDiag('diag-firebase', 'Loading...', 'orange');
                 let fb;
                 try {
                     fb = await import('../firebase-config.js');
@@ -1276,8 +1333,11 @@
                 setDoc = fb.setDoc;
                 limit = fb.limit;
                 addDoc = fb.addDoc;
+                updateDiag('diag-firebase', 'Loaded', '#2ed573');
+                updateDiag('diag-db', 'Connecting...', 'orange');
                 return true;
             } catch (e) {
+                updateDiag('diag-firebase', 'Failed', 'red');
                 console.error("Firebase load failed:", e);
                 alert("CRITICAL ERROR: Failed to load Firebase modules. \n\nThis usually happens if 'firebase-config.js' is missing or has a path error. \n\nDetails: " + e.message);
                 return false;
@@ -1427,12 +1487,14 @@
                 updateAvgSession();
 
                 // Update Cloud Status
-                const statusBadge = document.querySelector('.notice-box');
+                const statusBadge = document.getElementById('cloud-status-box');
                 if (statusBadge) {
                     statusBadge.style.borderColor = 'var(--success-color)';
                     statusBadge.style.color = 'var(--success-color)';
+                    statusBadge.style.background = 'rgba(46, 213, 115, 0.1)';
                     statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> <span><strong>Live:</strong> Synchronized with Cloud Database.</span>';
                 }
+                updateDiag('diag-db', 'Synchronized', '#2ed573');
             });
 
             // Phase 3 Loaders

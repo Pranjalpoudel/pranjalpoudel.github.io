@@ -422,6 +422,7 @@ if (contactForm) {
         timestamps = timestamps.filter(ts => now - ts < TIME_WINDOW);
 
         if (timestamps.length >= MAX_MESSAGES) {
+            console.warn("Contact form rate limit exceeded locally.");
             alert("You are sending messages too fast! Please wait a minute before trying again.");
             return;
         }
@@ -439,16 +440,14 @@ if (contactForm) {
         console.log("Contact Form: Submission started...");
         console.log("Contact Form: Rate limit check passed.");
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const message = document.getElementById('message').value;
+        const name = contactForm.querySelector('input[type="text"]').value;
+        const email = contactForm.querySelector('input[type="email"]').value;
+        const message = contactForm.querySelector('textarea').value;
         const date = new Date().toLocaleString();
-
-        let errors = [];
 
         try {
             // 3. Database Operation
-            console.log("Attempting to add document to Firestore...");
+            console.log("DIAGNOSTIC: Attempting Firestore write...");
             const messagesCol = collection(db, 'messages');
             await addDoc(messagesCol, {
                 name: name,
@@ -457,10 +456,10 @@ if (contactForm) {
                 date: date,
                 timestamp: serverTimestamp()
             });
-            console.log("Document written to Firebase");
+            console.log("DIAGNOSTIC: Firestore write SUCCESS.");
 
             // 4. Email Operation
-            console.log("Attempting to send email via EmailJS...");
+            console.log("DIAGNOSTIC: Attempting EmailJS send (v4)...");
             const PUBLIC_KEY = "LFPFxLemx1fOeOGCg";
 
             // Ensure initialized with Version 4+ syntax
@@ -468,6 +467,7 @@ if (contactForm) {
                 emailjs.init({
                     publicKey: PUBLIC_KEY,
                 });
+                console.log("DIAGNOSTIC: EmailJS init SUCCESS.");
             }
 
             await emailjs.send('service_a9ppxid', 'template_into7hk', {
@@ -475,7 +475,7 @@ if (contactForm) {
                 from_email: email,
                 message: message
             });
-            console.log("Email sent successfully");
+            console.log("DIAGNOSTIC: EmailJS send SUCCESS.");
 
             // Success!!
             alert('Message Sent Successfully!');
