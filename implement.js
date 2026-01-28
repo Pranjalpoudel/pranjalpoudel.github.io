@@ -463,16 +463,18 @@ if (contactForm) {
             console.log("Attempting to send email via EmailJS...");
             const PUBLIC_KEY = "LFPFxLemx1fOeOGCg";
 
-            // Ensure initialized
+            // Ensure initialized with Version 4+ syntax
             if (typeof emailjs !== 'undefined') {
-                emailjs.init(PUBLIC_KEY);
+                emailjs.init({
+                    publicKey: PUBLIC_KEY,
+                });
             }
 
             await emailjs.send('service_a9ppxid', 'template_into7hk', {
                 from_name: name,
                 from_email: email,
                 message: message
-            }, PUBLIC_KEY);
+            });
             console.log("Email sent successfully");
 
             // Success!!
