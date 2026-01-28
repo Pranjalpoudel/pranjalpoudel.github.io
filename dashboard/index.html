@@ -1697,14 +1697,14 @@
         }
 
         // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('login-overlay').style.display = 'none';
 
                 // Initialize session (in refresh mode)
                 initSession(true);
 
-                window.loadDashboardData();
+                await window.loadDashboardData();
             }
         });
 
@@ -1744,7 +1744,7 @@
                     logActivity("Admin Login", "Authorized dashboard access", "fas fa-sign-in-alt");
 
                     // Load dashboard data
-                    loadDashboardData();
+                    await loadDashboardData();
                 } else {
                     errorMsg.innerText = "Incorrect Password";
                     errorMsg.style.display = 'block';
