@@ -1242,9 +1242,10 @@
             const titles = {
                 'overview': 'Dashboard Overview',
                 'messages': 'Messages Inbox',
-                'analytics': 'Detailed Analytics'
+                'analytics': 'Detailed Analytics',
+                'system-health': 'System Health & Monitoring'
             };
-            document.getElementById('page-title').innerText = titles[tabId];
+            document.getElementById('page-title').innerText = titles[tabId] || 'Dashboard';
         };
 
         // --- 2. Data Handling (Firebase) ---
@@ -1256,7 +1257,13 @@
         // Dynamic Firebase Import to prevent total crash on 404
         async function initFirebase() {
             try {
-                const fb = await import('../firebase-config.js');
+                let fb;
+                try {
+                    fb = await import('../firebase-config.js');
+                } catch (e) {
+                    console.warn("Relative firebase-config load failed, trying absolute...");
+                    fb = await import('/firebase-config.js');
+                }
                 db = fb.db;
                 collection = fb.collection;
                 onSnapshot = fb.onSnapshot;
@@ -1272,6 +1279,7 @@
                 return true;
             } catch (e) {
                 console.error("Firebase load failed:", e);
+                alert("CRITICAL ERROR: Failed to load Firebase modules. \n\nThis usually happens if 'firebase-config.js' is missing or has a path error. \n\nDetails: " + e.message);
                 return false;
             }
         }
@@ -1336,8 +1344,9 @@
 
                 const stats = [];
                 snapshot.forEach(doc => {
-                    if (doc.id !== 'global') {
-                        stats.push({ date: doc.id, count: doc.data().count });
+                    // Only include docs that look like dates (e.g., 2026-01-27)
+                    if (doc.id !== 'global' && /^\d{4}-\d{2}-\d{2}$/.test(doc.id)) {
+                        stats.push({ date: doc.id, count: doc.data().count || 0 });
                     }
                 });
 
@@ -1395,19 +1404,35 @@
             renderReferralChart();
 
             // Messages - Realtime Listener
-            const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+            // Note: We listen to the whole collection for now to ensure old messages 
+            // (without timestamps) still show up while we transition.
+            const q = query(collection(db, "messages")); // Removed orderBy for robustness with old data
 
             unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const messages = [];
                 querySnapshot.forEach((doc) => {
-                    messages.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    // Fallback timestamp if missing for sorting
+                    const ts = data.timestamp ? (data.timestamp.toDate ? data.timestamp.toDate() : data.timestamp) : new Date(0);
+                    messages.push({ id: doc.id, sortTs: ts, ...data });
                 });
+
+                // Sort locally to handle mixed data types robustly
+                messages.sort((a, b) => b.sortTs - a.sortTs);
 
                 document.getElementById('total-messages').innerText = messages.length;
                 renderMessages(messages);
 
                 // Track avg session (simulated for now based on current session if no history)
                 updateAvgSession();
+
+                // Update Cloud Status
+                const statusBadge = document.querySelector('.notice-box');
+                if (statusBadge) {
+                    statusBadge.style.borderColor = 'var(--success-color)';
+                    statusBadge.style.color = 'var(--success-color)';
+                    statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> <span><strong>Live:</strong> Synchronized with Cloud Database.</span>';
+                }
             });
 
             // Phase 3 Loaders
