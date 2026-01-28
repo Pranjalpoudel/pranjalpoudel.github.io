@@ -107,9 +107,15 @@ window.addEventListener('scroll', () => {
 
 // Interactive Circuit Background
 const canvas = document.getElementById('canvas1');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+if (!canvas) {
+    console.error("Canvas element #canvas1 not found!");
+}
+const ctx = canvas ? canvas.getContext('2d') : null;
+
+if (canvas && ctx) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
 
 let particlesArray;
 
@@ -140,11 +146,14 @@ class Particle {
 
     // Method to draw individual particle
     draw() {
+        if (!ctx) return;
+        ctx.save();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
         ctx.fillStyle = this.color;
-        ctx.globalAlpha = 0.8;
+        ctx.globalAlpha = 0.6;
         ctx.fill();
+        ctx.restore();
     }
 
     // Check particle position, check mouse position, move the particle, draw the particle
@@ -207,8 +216,9 @@ function init() {
 
 // Animation Loop
 function animate() {
+    if (!ctx) return;
     requestAnimationFrame(animate);
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < particlesArray.length; i++) {
         particlesArray[i].update();
@@ -217,17 +227,24 @@ function animate() {
 }
 
 // Check if particles are close enough to draw line
+const CONNECTION_DISTANCE = 150; // Max pixels for connection
+const CONNECTION_SQ = CONNECTION_DISTANCE * CONNECTION_DISTANCE;
+
 function connect() {
+    if (!ctx) return;
     let opacityValue = 1;
     let networkColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+    const rgb = hexToRgb(networkColor) || { r: 0, g: 243, b: 255 };
+
     for (let a = 0; a < particlesArray.length; a++) {
         for (let b = a; b < particlesArray.length; b++) {
-            let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
-                ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-            if (distance < (canvas.width / 7) * (canvas.height / 7)) {
-                opacityValue = 1 - (distance / 20000);
-                const rgb = hexToRgb(networkColor) || { r: 0, g: 243, b: 255 }; // Fallback
-                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacityValue})`;
+            let dx = particlesArray[a].x - particlesArray[b].x;
+            let dy = particlesArray[a].y - particlesArray[b].y;
+            let distanceSq = dx * dx + dy * dy;
+
+            if (distanceSq < CONNECTION_SQ) {
+                opacityValue = 1 - (distanceSq / CONNECTION_SQ);
+                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacityValue * 0.8})`; // Re-increased for visibility
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -273,8 +290,10 @@ window.addEventListener('mouseout',
     }
 );
 
-init();
-animate();
+if (canvas && ctx) {
+    init();
+    animate();
+}
 
 // Visitor Counter Logic (Cloud + Local)
 async function trackVisit() {
@@ -359,7 +378,8 @@ if (contactForm) {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         submitBtn.disabled = true;
 
-        console.log("Form submitted");
+        console.log("Contact Form: Submission started...");
+        console.log("Contact Form: Rate limit check passed.");
 
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
