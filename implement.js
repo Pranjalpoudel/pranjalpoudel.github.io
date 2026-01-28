@@ -1,3 +1,6 @@
+// Firebase & Config Imports
+import { db, doc, setDoc, updateDoc, increment, collection, addDoc } from './firebase-config.js';
+
 // Theme Toggle Logic
 const themeToggles = document.querySelectorAll('.theme-toggle-btn'); // Select ALL buttons
 const body = document.body;
@@ -274,8 +277,6 @@ init();
 animate();
 
 // Visitor Counter Logic (Cloud + Local)
-import { db, doc, setDoc, updateDoc, increment } from './firebase-config.js';
-
 async function trackVisit() {
     const today = new Date().toISOString().split('T')[0];
     const visitCount = localStorage.getItem('page_visits') || 0;
@@ -322,10 +323,8 @@ backToTopButton.addEventListener("click", () => {
     });
 });
 
-// Firebase Imports
-import { db, collection, addDoc } from './firebase-config.js';
-
-console.log("implement.js loaded - Firebase Config imported");
+// Firebase Ready Logs
+console.log("implement.js loaded - Firebase Config ready");
 
 // Contact Form Logic
 const contactForm = document.querySelector('.contact-form');
