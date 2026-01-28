@@ -308,21 +308,79 @@ async function trackVisit() {
         counterElement.innerText = displayedCount;
     }
 
-    // Update Firebase
+    // 3. Update Firebase (Phase 2 & 3)
     try {
-        // Increment daily counter
-        const dailyRef = doc(db, "analytics", today);
-        await setDoc(dailyRef, { count: increment(1) }, { merge: true });
+        const today = new Date().toISOString().split('T')[0];
+        const pagePath = window.location.pathname.replace(/\/$/, "") || "home";
+        const deviceType = getDeviceType();
 
-        // Increment global counter
+        // Daily & Global counters
+        const dailyRef = doc(db, "analytics", today);
         const globalRef = doc(db, "analytics", "global");
-        await setDoc(globalRef, { total_visits: increment(1) }, { merge: true });
+
+        await Promise.all([
+            setDoc(dailyRef, { count: increment(1) }, { merge: true }),
+            setDoc(globalRef, { total_visits: increment(1) }, { merge: true }),
+            // Track Device (Phase 3)
+            setDoc(doc(db, "analytics", "devices"), { [deviceType]: increment(1) }, { merge: true }),
+            // Track Pages (Phase 3)
+            setDoc(doc(db, "analytics", "pages"), { [pagePath.replace(/\./g, '_')]: increment(1) }, { merge: true })
+        ]);
+
+        console.log(`Analytics: Tracked ${deviceType} visit to ${pagePath}`);
     } catch (e) {
         console.error("Error tracking visit:", e);
     }
 }
 
+// Device detection helper
+function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "tablet";
+    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "mobile";
+    return "desktop";
+}
+
+// System Health Monitoring (Phase 3)
+function initSystemMonitoring() {
+    window.addEventListener('error', async (event) => {
+        try {
+            const errorLogRef = collection(db, "system_events");
+            await addDoc(errorLogRef, {
+                type: 'error',
+                message: event.message,
+                source: event.filename,
+                line: event.lineno,
+                timestamp: serverTimestamp(),
+                url: window.location.href,
+                ua: navigator.userAgent
+            });
+        } catch (e) {
+            console.warn("Could not log error to Firebase:", e);
+        }
+    });
+
+    // Performance tracking
+    window.addEventListener('load', () => {
+        setTimeout(async () => {
+            const perf = window.performance.getEntriesByType("navigation")[0];
+            if (perf && perf.duration > 3000) { // Log slow loads (>3s)
+                try {
+                    const errorLogRef = collection(db, "system_events");
+                    await addDoc(errorLogRef, {
+                        type: 'performance',
+                        message: `Slow page load: ${Math.round(perf.duration)}ms`,
+                        timestamp: serverTimestamp(),
+                        url: window.location.href
+                    });
+                } catch (e) { }
+            }
+        }, 3000);
+    });
+}
+
 trackVisit();
+initSystemMonitoring();
 
 // Back to Top Button Logic
 const backToTopButton = document.getElementById("back-to-top");
