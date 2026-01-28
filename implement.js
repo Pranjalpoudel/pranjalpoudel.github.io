@@ -1,5 +1,5 @@
 // Firebase & Config Imports
-import { db, doc, setDoc, updateDoc, increment, collection, addDoc } from './firebase-config.js';
+import { db, doc, setDoc, updateDoc, increment, collection, addDoc, serverTimestamp } from './firebase-config.js';
 
 // Theme Toggle Logic
 const themeToggles = document.querySelectorAll('.theme-toggle-btn'); // Select ALL buttons
@@ -397,7 +397,7 @@ if (contactForm) {
                 email: email,
                 message: message,
                 date: date,
-                timestamp: new Date()
+                timestamp: serverTimestamp()
             });
             console.log("Document written to Firebase");
 

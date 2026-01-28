@@ -1395,6 +1395,8 @@
                     div.classList.add('selected');
                 }
 
+                const displayDate = msg.timestamp && msg.timestamp.toDate ? msg.timestamp.toDate().toLocaleString() : (msg.date || "Just now");
+
                 div.innerHTML = `
                     <input type="checkbox" class="message-checkbox" 
                            data-msg-id="${msg.id}" 
@@ -1405,7 +1407,7 @@
                             <div class="user-avatar" style="width:25px; height:25px; font-size:0.8rem;">${msg.name.charAt(0)}</div>
                             ${msg.name} <span style="font-weight:normal; color:grey; font-size:0.8rem;">(${msg.email})</span>
                         </div>
-                        <div class="msg-time">${msg.date}</div>
+                        <div class="msg-time">${displayDate}</div>
                     </div>
                     <div class="msg-body">${msg.message}</div>
                     <button class="delete-btn" onclick="deleteMessage('${msg.id}')">
