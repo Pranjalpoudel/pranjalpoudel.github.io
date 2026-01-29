@@ -155,10 +155,6 @@ body {
     width: 100%;
 }
 
-.nav-links li a.active::after {
-    width: 100%;
-}
-
 .nav-links li a:hover {
     color: var(--primary-color);
 }
