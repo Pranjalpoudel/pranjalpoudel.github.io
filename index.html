@@ -156,76 +156,70 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Pranjal Poudel",
-      "alternateName": "Pranjal Poudel Portfolio",
-      "url": "https://pranjalpoudel.com.np"
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Pranjal Poudel",
-      "url": "https://pranjalpoudel.com.np",
-      "image": "https://pranjalpoudel.com.np/picture.png",
-      "jobTitle": "Electronic Communication & Information Engineer",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Kathmandu",
-        "addressRegion": "Sitapaila",
-        "addressCountry": "NP"
-      },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+977-9767489841",
-        "contactType": "professional"
-      },
-      "sameAs": [
-        "https://github.com/Pranjalpoudel",
-        "https://x.com/PranjalPoudel22",
-        "https://www.linkedin.com/in/pranjal-poudel-81539b2a4/",
-        "https://www.facebook.com/pranjal.poudel.320830/"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://pranjalpoudel.com.np/#website",
+          "url": "https://pranjalpoudel.com.np",
+          "name": "Pranjal Poudel",
+          "alternateName": "Pranjal Poudel Portfolio",
+          "publisher": { "@id": "https://pranjalpoudel.com.np/#person" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://pranjalpoudel.com.np/#person",
+          "name": "Pranjal Poudel",
+          "url": "https://pranjalpoudel.com.np",
+          "image": "https://pranjalpoudel.com.np/picture.png",
+          "jobTitle": "Electronic Communication & Information Engineer",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Kathmandu",
+            "addressRegion": "Sitapaila",
+            "addressCountry": "NP"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+977-9767489841",
+            "contactType": "professional"
+          },
+          "sameAs": [
+            "https://github.com/Pranjalpoudel",
+            "https://x.com/PranjalPoudel22",
+            "https://www.linkedin.com/in/pranjal-poudel-81539b2a4",
+            "https://www.facebook.com/pranjal.poudel.320830"
+          ]
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://pranjalpoudel.com.np/#localbusiness",
+          "name": "Pranjal Poudel",
+          "image": "https://pranjalpoudel.com.np/picture.png",
+          "url": "https://pranjalpoudel.com.np",
+          "telephone": "+977-9767489841",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Sitapaila",
+            "addressLocality": "Kathmandu",
+            "addressRegion": "Bagmati",
+            "postalCode": "44600",
+            "addressCountry": "NP"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 27.7058,
+            "longitude": 85.2847
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+            ],
+            "opens": "00:00",
+            "closes": "23:59"
+          }
+        }
       ]
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "Pranjal Poudel",
-      "image": "https://pranjalpoudel.com.np/picture.png",
-      "@id": "https://pranjalpoudel.com.np",
-      "url": "https://pranjalpoudel.com.np",
-      "telephone": "+977-9767489841",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Sitapaila",
-        "addressLocality": "Kathmandu",
-        "addressRegion": "Bagmati",
-        "postalCode": "44600",
-        "addressCountry": "NP"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 27.7058,
-        "longitude": 85.2847
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday"
-        ],
-        "opens": "00:00",
-        "closes": "23:59"
-      }
     }
     </script>
 
