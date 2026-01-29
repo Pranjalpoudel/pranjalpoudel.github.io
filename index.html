@@ -89,6 +89,45 @@
     }
     </script>
 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Pranjal Poudel",
+      "image": "https://pranjalpoudel.com.np/picture.png",
+      "@id": "https://pranjalpoudel.com.np/",
+      "url": "https://pranjalpoudel.com.np/",
+      "telephone": "+977-9767489841",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sitapaila",
+        "addressLocality": "Kathmandu",
+        "addressRegion": "Bagmati",
+        "postalCode": "44600",
+        "addressCountry": "NP"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 27.7058,
+        "longitude": 85.2847
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "00:00",
+        "closes": "23:59"
+      }
+    }
+    </script>
+
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -395,14 +434,19 @@
                     <button type="submit" class="btn btn-primary">Send Message <i
                             class="fas fa-paper-plane"></i></button>
                 </form>
-                <div class="social-links-vertical">
+                <div class="social-links-vertical" itemscope itemtype="https://schema.org/LocalBusiness">
+                    <!-- Name for LocalBusiness -->
+                    <meta itemprop="name" content="Pranjal Poudel">
                     <!-- Address Card -->
                     <a href="https://www.google.com/maps/search/?api=1&query=Sitapaila,+Kathmandu" target="_blank"
-                        class="social-btn">
-                        <i class="fas fa-map-marker-alt"></i> Sitapaila, Kathmandu
+                        class="social-btn" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span itemprop="streetAddress">Sitapaila</span>,
+                        <span itemprop="addressLocality">Kathmandu</span>
+                        <meta itemprop="addressCountry" content="NP">
                     </a>
                     <!-- Phone Card -->
-                    <a href="tel:+9779767489841" class="social-btn">
+                    <a href="tel:+9779767489841" class="social-btn" itemprop="telephone">
                         <i class="fas fa-phone"></i> +977 9767489841
                     </a>
 
