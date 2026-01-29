@@ -7,8 +7,8 @@ Disallow: /dashboard/
 # Ensure Google can see your favicon and images
 Allow: /favicon.png
 Allow: /favicon-optimized.png
-Allow: /pic.jpg
-Allow: /pic.webp
+Allow: /picture.png
+Allow: /picture.webp
 Allow: /manifest.webmanifest
 
 # Point Google to your sitemap
