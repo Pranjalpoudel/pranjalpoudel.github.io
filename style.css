@@ -205,10 +205,16 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(0, 243, 255, 0.1) 0%, rgba(255, 0, 255, 0.05) 50%, transparent 70%);
     animation: rotateBackground 20s linear infinite;
     z-index: 0;
     filter: blur(80px);
+}
+
+/* Optimization: Stop rotating background on mobile to save CPU/GPU */
+@media (max-width: 768px) {
+    .hero::before {
+        animation: none;
+    }
 }
 
 @keyframes rotateBackground {

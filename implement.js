@@ -197,7 +197,7 @@ function init() {
     // Reduce particle density for smaller screens to prevent lag
     let divisor = 9000;
     if (window.innerWidth < 768) {
-        divisor = 20000; // Much fewer particles on mobile
+        divisor = 30000; // Even fewer particles on mobile for speed
     }
     let numberOfParticles = (canvas.height * canvas.width) / divisor;
     let networkColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
@@ -214,16 +214,33 @@ function init() {
     }
 }
 
+// Optimization: Pause animation when not in view
+let isCanvasVisible = true;
+const canvasObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        isCanvasVisible = entry.isIntersecting;
+        if (isCanvasVisible) requestAnimationFrame(animate);
+    });
+}, { threshold: 0.1 });
+
+const heroSection = document.getElementById('home');
+if (heroSection) canvasObserver.observe(heroSection);
+
 // Animation Loop
 function animate() {
-    if (!ctx) return;
+    if (!ctx || !isCanvasVisible) return;
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < particlesArray.length; i++) {
         particlesArray[i].update();
     }
-    connect();
+
+    // Mobile Performance Check: Lines are expensive (O(n^2))
+    // Only connect particles on desktop
+    if (window.innerWidth >= 768) {
+        connect();
+    }
 }
 
 // Check if particles are close enough to draw line

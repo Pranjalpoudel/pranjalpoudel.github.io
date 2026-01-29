@@ -16,9 +16,13 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet"
+        media="print" onload="this.media='all'">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        media="print" onload="this.media='all'">
 
 
     <link rel="manifest" href="manifest.webmanifest">
@@ -159,7 +163,8 @@
         <div class="glow-circle"></div>
         <picture>
             <source srcset="picture.webp" type="image/webp">
-            <img src="picture.png" alt="Pranjal Poudel - Electronic Engineer and Web Developer" class="profile-img">
+            <img src="picture.png" alt="Pranjal Poudel - Electronic Engineer and Web Developer" class="profile-img"
+                fetchpriority="high" decoding="async">
         </picture>
         <canvas id="canvas1"></canvas>
     </section>
