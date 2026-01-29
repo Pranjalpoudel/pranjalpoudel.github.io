@@ -219,7 +219,10 @@ let isCanvasVisible = true;
 const canvasObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         isCanvasVisible = entry.isIntersecting;
-        if (isCanvasVisible) requestAnimationFrame(animate);
+        if (isCanvasVisible) {
+            // Restart animation loop when visible
+            animate();
+        }
     });
 }, { threshold: 0.1 });
 
@@ -227,9 +230,13 @@ const heroSection = document.getElementById('home');
 if (heroSection) canvasObserver.observe(heroSection);
 
 // Animation Loop
+let animationFrameId;
 function animate() {
-    if (!ctx || !isCanvasVisible) return;
-    requestAnimationFrame(animate);
+    if (!ctx || !isCanvasVisible) {
+        cancelAnimationFrame(animationFrameId);
+        return;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < particlesArray.length; i++) {
@@ -241,6 +248,8 @@ function animate() {
     if (window.innerWidth >= 768) {
         connect();
     }
+
+    animationFrameId = requestAnimationFrame(animate);
 }
 
 // Check if particles are close enough to draw line
@@ -308,8 +317,11 @@ window.addEventListener('mouseout',
 );
 
 if (canvas && ctx) {
-    init();
-    animate();
+    // Delay initialization to help with TTI
+    setTimeout(() => {
+        init();
+        animate();
+    }, 500);
 }
 
 // Visitor Counter Logic (Cloud + Local)
