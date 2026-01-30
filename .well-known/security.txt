@@ -1,0 +1,5 @@
+Contact: mailto:pranjalpaudel62@gmail.com
+Expires: 2027-01-30T10:00:00.000Z
+Preferred-Languages: en, ne
+Canonical: https://pranjalpoudel.com.np/.well-known/security.txt
+Policy: https://pranjalpoudel.com.np/robots.txt

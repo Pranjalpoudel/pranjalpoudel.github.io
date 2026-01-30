@@ -1,0 +1,12 @@
+/* TEAM */
+Chef: Pranjal Poudel
+Contact: pranjalpaudel62 [at] gmail.com
+Twitter: @PranjalPoudel22
+From: Kathmandu, Nepal
+
+/* SITE */
+Last update: 2026-01-30
+Language: English
+Doctype: HTML5
+Standards: HTML5, CSS3, ES6+
+Software: Vanilla JS, FontAwesome, Google Fonts
