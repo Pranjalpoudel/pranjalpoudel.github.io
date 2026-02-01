@@ -330,6 +330,7 @@ body {
 .profile-img {
     width: 350px;
     height: 350px;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
     border: 2px solid rgba(0, 243, 255, 0.5);
@@ -339,6 +340,8 @@ body {
     /* Explicit z-index above canvas */
     position: relative;
     backdrop-filter: blur(5px);
+    display: block;
+    /* Avoid inline-block spacing issues */
 }
 
 .glow-circle {
@@ -798,10 +801,13 @@ footer i {
 /* Scroll Reveal Animation */
 .reveal {
     opacity: 1 !important;
+    visibility: visible !important;
     /* Force visible for bots by default */
     transform: none !important;
-    /* Remove initial transform */
+    /* Remove initial transform to prevent CLS */
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    contain: content;
+    /* Containment for performance */
 }
 
 .reveal.reveal-hidden {
