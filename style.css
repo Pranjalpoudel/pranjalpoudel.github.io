@@ -45,6 +45,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
 }
 
 /* Custom Scrollbar */
@@ -169,14 +170,15 @@ body {
 
 /* Hero Section */
 .hero {
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100svh;
+    /* Dynamic viewport height for mobile */
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 10%;
     position: relative;
     overflow: visible;
-    /* Changed from hidden to ensure no clipping for bots */
 }
 
 #canvas1 {
@@ -337,11 +339,11 @@ body {
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
     animation: morph 8s ease-in-out infinite, float 6s ease-in-out infinite;
     z-index: 5;
-    /* Explicit z-index above canvas */
     position: relative;
     backdrop-filter: blur(5px);
     display: block;
-    /* Avoid inline-block spacing issues */
+    will-change: transform, border-radius;
+    transform: translateZ(0);
 }
 
 .glow-circle {
