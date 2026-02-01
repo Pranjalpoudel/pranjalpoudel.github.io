@@ -107,9 +107,6 @@ window.addEventListener('scroll', () => {
 
 // Interactive Circuit Background
 const canvas = document.getElementById('canvas1');
-if (!canvas) {
-    console.error("Canvas element #canvas1 not found!");
-}
 const ctx = canvas ? canvas.getContext('2d') : null;
 
 if (canvas && ctx) {
@@ -415,7 +412,6 @@ if (backToTopButton) {
 // Contact Form Logic
 const contactForm = document.querySelector('.contact-form');
 if (contactForm) {
-    console.log("Contact form found");
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -446,9 +442,6 @@ if (contactForm) {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         submitBtn.disabled = true;
 
-        console.log("Contact Form: Submission started...");
-        console.log("Contact Form: Rate limit check passed.");
-
         const name = contactForm.querySelector('input[type="text"]').value;
         const email = contactForm.querySelector('input[type="email"]').value;
         const message = contactForm.querySelector('textarea').value;
@@ -456,7 +449,6 @@ if (contactForm) {
 
         try {
             // 3. Database Operation
-            console.log("DIAGNOSTIC: Attempting Firestore write...");
             const messagesCol = collection(db, 'messages');
             await addDoc(messagesCol, {
                 name: name,
@@ -465,10 +457,8 @@ if (contactForm) {
                 date: date,
                 timestamp: serverTimestamp()
             });
-            console.log("DIAGNOSTIC: Firestore write SUCCESS.");
 
             // 4. Email Operation
-            console.log("DIAGNOSTIC: Attempting EmailJS send (v4)...");
             const PUBLIC_KEY = "LFPFxLemx1fOeOGCg";
 
             // Ensure initialized with Version 4+ syntax
@@ -476,7 +466,6 @@ if (contactForm) {
                 emailjs.init({
                     publicKey: PUBLIC_KEY,
                 });
-                console.log("DIAGNOSTIC: EmailJS init SUCCESS.");
             }
 
             await emailjs.send('service_a9ppxid', 'template_into7hk', {
@@ -484,7 +473,6 @@ if (contactForm) {
                 from_email: email,
                 message: message
             });
-            console.log("DIAGNOSTIC: EmailJS send SUCCESS.");
 
             // Success!!
             alert('Message Sent Successfully!');
