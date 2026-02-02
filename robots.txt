@@ -1,4 +1,5 @@
 # This file is optimized for pranjalpoudel.com.np
+# Optimization: Prioritizing site name and favicon signals for Googlebot
 User-agent: *
 
 # Hide your dashboard page

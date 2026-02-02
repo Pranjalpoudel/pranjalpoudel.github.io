@@ -234,17 +234,17 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Pranjal Poudel",
-      "alternateName": ["Pranjal Poudel Portfolio", "Pranjal"],
-      "url": "https://pranjalpoudel.com.np/"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
       "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://pranjalpoudel.com.np/#website",
+          "url": "https://pranjalpoudel.com.np/",
+          "name": "Pranjal Poudel",
+          "alternateName": ["Pranjal Poudel Portfolio", "Pranjal"],
+          "publisher": {
+            "@id": "https://pranjalpoudel.com.np/#person"
+          }
+        },
         {
           "@type": "Person",
           "@id": "https://pranjalpoudel.com.np/#person",
