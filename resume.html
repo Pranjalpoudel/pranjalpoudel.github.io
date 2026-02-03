@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pranjal Poudel - Resume</title>
+
+    <!-- Meta Tags -->
+    <meta name="description"
+        content="View the professional resume of Pranjal Poudel, Electronic Communication & Information Engineer.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon-optimized.png">
+    <link rel="apple-touch-icon" href="favicon-optimized.png">
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #0a0a0a;
+            /* Match site theme */
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .fallback-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #e0e0e0;
+            font-family: 'Outfit', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .btn {
+            background-color: #00f3ff;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Embed PDF -->
+    <iframe src="resume.pdf#toolbar=0" title="Pranjal Poudel Resume">
+        <div class="fallback-container">
+            <h2>Unable to display PDF</h2>
+            <p>It seems your browser doesn't support embedded PDFs. You can download it directly below:</p>
+            <a href="resume.pdf" class="btn" download>Download Resume</a>
+        </div>
+    </iframe>
+</body>
+
+</html>
