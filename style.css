@@ -434,6 +434,21 @@ body {
     transform: translateY(-2px);
 }
 
+.resume-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.resume-btn i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.resume-btn:hover i {
+    transform: translateY(3px);
+}
+
 /* Sections */
 .section {
     padding: 5rem 5%;
