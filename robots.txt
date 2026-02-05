@@ -6,6 +6,7 @@ User-agent: *
 Disallow: /dashboard/
 
 # Ensure Google can see your favicon and images
+Allow: /favicon.ico
 Allow: /favicon.png
 Allow: /favicon-optimized.png
 Allow: /picture.png
