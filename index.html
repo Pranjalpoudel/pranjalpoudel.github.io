@@ -53,18 +53,26 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://pranjalpoudel.com.np/#website",
+      "url": "https://pranjalpoudel.com.np/",
+      "name": "Pranjal Poudel",
+      "alternateName": ["Pranjal Poudel Portfolio", "Pranjal"],
+      "publisher": {
+        "@id": "https://pranjalpoudel.com.np/#person"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://pranjalpoudel.com.np/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
       "@graph": [
-        {
-          "@type": "WebSite",
-          "@id": "https://pranjalpoudel.com.np/#website",
-          "url": "https://pranjalpoudel.com.np/",
-          "name": "Pranjal Poudel",
-          "description": "Personal portfolio of Pranjal Poudel, Electronic Engineer and Web Developer",
-          "alternateName": ["Pranjal Poudel Portfolio", "Pranjal"],
-          "publisher": {
-            "@id": "https://pranjalpoudel.com.np/#person"
-          }
-        },
         {
           "@type": "Person",
           "@id": "https://pranjalpoudel.com.np/#person",
@@ -74,7 +82,7 @@
           "jobTitle": "Electronic Communication & Information Engineer",
           "alumniOf": {
             "@type": "CollegeOrUniversity",
-            "name": "National College of Engineering",
+            "name": "National College of Education",
             "location": "Kathmandu"
           },
           "address": {
