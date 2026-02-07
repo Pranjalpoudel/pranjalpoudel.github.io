@@ -11,6 +11,7 @@
     --card-border: rgba(255, 255, 255, 0.1);
     --nav-bg: rgba(10, 10, 10, 0.8);
     --glow-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 .light-mode {
@@ -30,6 +31,7 @@
     --nav-bg: rgba(255, 255, 255, 0.85);
     /* Glassy White */
     --glow-shadow: 0 0 20px rgba(79, 70, 229, 0.25);
+    --glass-border: rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -881,6 +883,7 @@ footer i {
     }
 
     .nav-links.active {
+        display: flex; /* Ensure it's flex */
         transform: translateX(0);
     }
 
